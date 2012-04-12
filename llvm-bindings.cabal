@@ -1,0 +1,59 @@
+name:			llvm-bindings
+version:		3.1.0.0
+license:		BSD3
+synopsis:		LLVM Bindings for Haskell
+description:
+  Simple LLVM indings library for Haskell.  Contains raw FFI bindings,
+  as well as more Haskell-friendly versions.
+
+  Bindings are created against the LLVM C bindings primarily.
+
+  Version major and minor numbers track the primary LLVM release
+  targeted by the library.  Backwards compatibility against previous
+  LLVM versions depends primarily on whether or not LLVM itself
+  guarantees such compatibility.
+
+  This release focuses on providing an interface to LLVM as a compiler
+  backend.  Disassembly and object file features, link-time
+  optimization, and the execution engine are not supported in this
+  version.  Support is planned for later versions.
+author:			Eric McCorkle
+maintainer:		Eric McCorkle <eric@shadowsun.net>
+stability:		Alpha
+category:		Compilers/Interpreters, Code Generation
+build-type:		Custom
+cabal-version:		>= 1.2
+
+extra-tmp-files:
+    autom4te.cache
+    config.log
+    config.status
+    llvm-bindings.buildinfo
+
+extra-source-files:
+    configure.ac
+    configure
+    llvm-bindings.buildinfo.in
+
+library
+  build-depends:	base
+  build-tools:		hsc2hs
+  exposed-modules:
+    LLVM.Analysis
+    LLVM.BitReader
+    LLVM.BitWriter
+    LLVM.Core
+    LLVM.Initialization
+    LLVM.Target
+    LLVM.Transforms.Scalar
+    LLVM.Transforms.IPO
+    LLVM.Transforms.Vectorize
+    LLVM.FFI.Analysis
+    LLVM.FFI.BitReader
+    LLVM.FFI.BitWriter
+    LLVM.FFI.Core
+    LLVM.FFI.Initialization
+    LLVM.FFI.Target
+    LLVM.FFI.Transforms.Scalar
+    LLVM.FFI.Transforms.IPO
+    LLVM.FFI.Transforms.Vectorize
