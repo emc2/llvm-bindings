@@ -1,5 +1,4 @@
 {-# LANGUAGE CPP, ForeignFunctionInterface, EmptyDataDecls #-}
-
 -- Copyright (c) 2012 Eric McCorkle.  All rights reserved.
 --
 -- Portions of this code are derived from software originally written
@@ -31,6 +30,7 @@
 -- OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 -- SUCH DAMAGE.
 
+-- | Raw FFI bindings for llvm-c/BitReader.h
 module LLVM.FFI.BitReader(
        getBitcodeModuleProvider,
        getBitcodeModuleProviderInContext,

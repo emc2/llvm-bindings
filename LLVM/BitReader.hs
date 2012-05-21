@@ -29,6 +29,8 @@
 -- OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 -- SUCH DAMAGE.
 
+-- | Bindings for llvm-c/BitReader.h, wrapped in utility code to make them
+-- more usable for general purposes.
 module LLVM.BitReader(
        parseBitcode,
        parseBitcodeInContext,
