@@ -1,0 +1,17 @@
+Simple LLVM bindings library for Haskell.  Contains raw FFI bindings,
+as well as more Haskell-friendly versions.
+
+Bindings are created against the LLVM C bindings primarily.
+
+Version major and minor numbers track the primary LLVM release
+targeted by the library.  Backwards compatibility against previous
+LLVM versions depends primarily on whether or not LLVM itself
+guarantees such compatibility.
+
+This release focuses on providing an interface to LLVM as a compiler
+backend.  Disassembly and object file features, link-time
+optimization, and the execution engine are not supported in this
+version.  Support is planned for later versions.
+
+
+This code was derived in part from Bryan O'Sullivan's llvm Haskell library.
