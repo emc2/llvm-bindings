@@ -137,10 +137,6 @@ module LLVM.FFI.Core(
        typeIsSized,
        getTypeContext,
 
-       -- * Module providers
-       createModuleProviderForExistingModule,
-       ptrDisposeModuleProvider,
-
        -- ** Integer types
        -- | Functions in this section operate on integer types.
 
