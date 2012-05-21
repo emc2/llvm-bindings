@@ -1515,8 +1515,11 @@ foreign import ccall unsafe "LLVMGetIntTypeWidth"
 
 -- ** Floating Point types
 
+foreign import ccall unsafe "LLVMHalfTypeInContext"
+  halfTypeInContext :: ContextRef -> IO TypeRef
+
 foreign import ccall unsafe "LLVMFloatTypeInContext"
-  floatTypeInContext :: ContextRef -> IO TypeRef`w
+  floatTypeInContext :: ContextRef -> IO TypeRef
 
 foreign import ccall unsafe "LLVMDoubleTypeInContext"
   doubleTypeInContext :: ContextRef -> IO TypeRef
@@ -1530,6 +1533,7 @@ foreign import ccall unsafe "LLVMFP128TypeInContext"
 foreign import ccall unsafe "LLVMPPCFP128TypeInContext"
   ppcFP128TypeInContext :: ContextRef -> IO TypeRef
 
+foreign import ccall unsafe "LLVMHalfType" halfType :: TypeRef
 foreign import ccall unsafe "LLVMFloatType" floatType :: TypeRef
 foreign import ccall unsafe "LLVMDoubleType" doubleType :: TypeRef
 foreign import ccall unsafe "LLVMX86FP80Type" x86FP80Type :: TypeRef
@@ -3041,10 +3045,10 @@ foreign import ccall unsafe "LLVMBuildGlobalString"
 foreign import ccall unsafe "LLVMBuildGlobalStringPtr"
   buildGlobalStringPtr :: BuilderRef -> CString -> CString -> IO ValueRef
 
-foregn import ccall unsafe "LLVMGetVolatile"
+foreign import ccall unsafe "LLVMGetVolatile"
   getVolatile :: ValueRef -> IO CInt
 
-foregn import ccall unsafe "LLVMSetVolatile"
+foreign import ccall unsafe "LLVMSetVolatile"
   setVolatile :: ValueRef -> CInt -> IO ()
 
 -- Casts

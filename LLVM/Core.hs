@@ -1373,13 +1373,11 @@ constString :: String
             -- ^ String constant
             -> Bool
             -- ^ Whether the string is null-terminated.
-            -> ValueRef
-              -- ^ String constant
+            -> IO ValueRef
+            -- ^ String constant
 constString str nullterm =
-  unsafePerformIO
-    (withCStringLen str
-      (\(cstr, len) ->
-        return (FFI.constString cstr (fromIntegral len) (fromBool nullterm))))
+  withCStringLen str
+    (\(cstr, len) -> FFI.constString cstr (fromIntegral len) (fromBool nullterm))
 
 -- | Create an anonymous ConstantStruct with the specified values.
 constStructInContext :: ContextRef
@@ -2525,7 +2523,7 @@ buildGlobalStringPtr b name str =
       (\cstr -> FFI.buildGlobalStringPtr b cname cstr))
 
 getVolatile :: ValueRef -> IO Bool
-getVolatile val = FFI.getVolatile val >>= toBool
+getVolatile val = FFI.getVolatile val >>= return . toBool
 
 setVolatile :: ValueRef -> Bool -> IO ()
 setVolatile val = FFI.setVolatile val . fromBool

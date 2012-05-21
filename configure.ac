@@ -30,11 +30,13 @@ AC_PATH_PROGS(llvm_config, [llvm-config],
   [AC_MSG_ERROR(could not find llvm-config in $llvm_bindir)],
   ["$llvm_bindir:$PATH"])
 
+llvm_systems="core codegen jit interpreter"
+
 llvm_version="`$llvm_config --version`"
 llvm_cppflags="`$llvm_config --cppflags`"
 llvm_includedir="`$llvm_config --includedir`"
 llvm_ldflags="`$llvm_config --ldflags`"
-llvm_static_libs="`$llvm_config --libs all`"
+llvm_static_libs="`$llvm_config --libs $llvm_systems`"
 llvm_ldoptions="$llvm_ldflags $llvm_static_libs"
 llvm_extra_libdirs="`$llvm_config --libdir`"
 
