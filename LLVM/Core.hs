@@ -645,7 +645,7 @@ module LLVM.Core(
        disposePassManager
        ) where
 
-import Foreign hiding (sizeOf)
+import Foreign hiding (unsafePerformIO, sizeOf)
 import Foreign.C.String
 import Foreign.C.Types
 import LLVM.FFI.Core(ContextRef, ModuleRef, TypeRef, ValueRef, UseRef,
@@ -654,6 +654,7 @@ import LLVM.FFI.Core(ContextRef, ModuleRef, TypeRef, ValueRef, UseRef,
                      Attribute(..), TypeKind(..), Linkage(..), Visibility(..),
                      IntPredicate(..), RealPredicate(..),
                      CallingConvention(..), Opcode(..))
+import System.IO.Unsafe
 
 import qualified LLVM.FFI.Core as FFI
 
