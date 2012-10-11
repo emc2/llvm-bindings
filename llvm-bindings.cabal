@@ -57,3 +57,7 @@ library
     LLVM.FFI.Transforms.Scalar
     LLVM.FFI.Transforms.IPO
     LLVM.FFI.Transforms.Vectorize
+
+source-repository head
+  type: git
+  location: git://github.com/emc2/llvm-bindings.git
