@@ -2584,7 +2584,7 @@ done
 test -n "$llvm_config" || llvm_config="as_fn_error $? "could not find llvm-config in $llvm_bindir" "$LINENO" 5"
 
 
-llvm_systems="core codegen jit interpreter"
+llvm_systems="core codegen"
 
 llvm_version="`$llvm_config --version`"
 llvm_cppflags="`$llvm_config --cppflags`"
