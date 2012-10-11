@@ -14,4 +14,8 @@ optimization, and the execution engine are not supported in this
 version.  Support is planned for later versions.
 
 
-This code was derived in part from Bryan O'Sullivan's llvm Haskell library.
+At present, this doesn't seem to work in GHCI, due to missing C++
+arcana; however, standalone applications seem to compile just fine.
+
+This code was derived in part from Bryan O'Sullivan's llvm Haskell
+library.
