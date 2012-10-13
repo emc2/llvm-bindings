@@ -51,11 +51,11 @@ import LLVM.FFI.Core
 #include <llvm-c/Analysis.h>
 
 data VerifierFailureAction =
--- | Verifier will print to stderr and abort()
+  -- | Verifier will print to stderr and abort()
     AbortProcess
--- | Verifier will print to stderr and return 1
+  -- | Verifier will print to stderr and return 1
   | PrintMessage
--- | Verifier will return 1
+  -- | Verifier will return 1
   | ReturnStatus
 
 fromVerifierFailureAction :: VerifierFailureAction -> CInt
