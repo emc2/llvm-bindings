@@ -17,5 +17,7 @@ version.  Support is planned for later versions.
 At present, this doesn't seem to work in GHCI, due to missing C++
 arcana; however, standalone applications seem to compile just fine.
 
+This has been tested on FreeBSD at present, but no other platforms.
+
 This code was derived in part from Bryan O'Sullivan's llvm Haskell
 library.
