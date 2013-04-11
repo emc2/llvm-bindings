@@ -1,4 +1,4 @@
-AC_INIT([Haskell LLVM Bindings], [3.1.0.2], [eric@shadowsun.net], [llvm-bindings])
+AC_INIT([Haskell LLVM Bindings], [3.1.1.0], [eric@shadowsun.net], [llvm-bindings])
 
 AC_CONFIG_FILES([llvm-bindings.buildinfo])
 
