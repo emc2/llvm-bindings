@@ -199,6 +199,75 @@ module LLVM.Core(
        -- instances, regardless of their sub-type. They correspond to
        -- functions available on llvm::Value.
 
+       isAArgument,
+       isABasicBlock,
+       isAInlineAsm,
+       isAMDNode,
+       isAMDString,
+       isAUser,
+       isAConstant,
+       isABlockAddress,
+       isAConstantAggregateZero,
+       isAConstantArray,
+       isAConstantExpr,
+       isAConstantFP,
+       isAConstantInt,
+       isAConstantPointerNull,
+       isAConstantStruct,
+       isAConstantVector,
+       isAGlobalValue,
+       isAFunction,
+       isAGlobalAlias,
+       isAGlobalVariable,
+       isAUndefValue,
+       isAInstruction,
+       isABinaryOperator,
+       isACallInst,
+       isAIntrinsicInst,
+       isADbgInfoIntrinsic,
+       isADbgDeclareInst,
+       isAMemIntrinsic,
+       isAMemCpyInst,
+       isAMemMoveInst,
+       isAMemSetInst,
+       isACmpInst,
+       isAFCmpInst,
+       isAICmpInst,
+       isAExtractElementInst,
+       isAGetElementPtrInst,
+       isAInsertElementInst,
+       isAInsertValueInst,
+       isALandingPadInst,
+       isAPHINode,
+       isASelectInst,
+       isAShuffleVectorInst,
+       isAStoreInst,
+       isATerminatorInst,
+       isABranchInst,
+       isAIndirectBrInst,
+       isAInvokeInst,
+       isAReturnInst,
+       isASwitchInst,
+       isAUnreachableInst,
+       isAResumeInst,
+       isAUnaryInstruction,
+       isAAllocaInst,
+       isACastInst,
+       isABitCastInst,
+       isAFPExtInst,
+       isAFPToSIInst,
+       isAFPToUIInst,
+       isAFPTruncInst,
+       isAIntToPtrInst,
+       isAPtrToIntInst,
+       isASExtInst,
+       isASIToFPInst,
+       isATruncInst,
+       isAUIToFPInst,
+       isAZExtInst,
+       isAExtractValueInst,
+       isALoadInst,
+       isAVAArgInst,
        typeOf,
        getValueName,
        setValueName,
@@ -1185,6 +1254,213 @@ x86MMXType :: TypeRef
 x86MMXType = FFI.x86MMXType
 
 -- * Values
+
+isAArgument :: ValueRef -> IO Bool
+isAArgument = FFI.isAArgument
+
+isABasicBlock :: ValueRef -> IO Bool
+isABasicBlock = FFI.isABasicBlock
+
+isAInlineAsm :: ValueRef -> IO Bool
+isAInlineAsm = FFI.isAInlineAsm
+
+isAMDNode :: ValueRef -> IO Bool
+isAMDNode = FFI.isAMDNode
+
+isAMDString :: ValueRef -> IO Bool
+isAMDString = FFI.isAMDString
+
+isAUser :: ValueRef -> IO Bool
+isAUser = FFI.isAUser
+
+isAConstant :: ValueRef -> IO Bool
+isAConstant = FFI.isAConstant
+
+isABlockAddress :: ValueRef -> IO Bool
+isABlockAddress = FFI.isABlockAddress
+
+isAConstantAggregateZero :: ValueRef -> IO Bool
+isAConstantAggregateZero = FFI.isAConstantAggregateZero
+
+isAConstantArray :: ValueRef -> IO Bool
+isAConstantArray = FFI.isAConstantArray
+
+isAConstantExpr :: ValueRef -> IO Bool
+isAConstantExpr = FFI.isAConstantExpr
+
+isAConstantFP :: ValueRef -> IO Bool
+isAConstantFP = FFI.isAConstantFP
+
+isAConstantInt :: ValueRef -> IO Bool
+isAConstantInt = FFI.isAConstantInt
+
+isAConstantPointerNull :: ValueRef -> IO Bool
+isAConstantPointerNull = FFI.isAConstantPointerNull
+
+isAConstantStruct :: ValueRef -> IO Bool
+isAConstantStruct = FFI.isAConstantStruct
+
+isAConstantVector :: ValueRef -> IO Bool
+isAConstantVector = FFI.isAConstantVector
+
+isAGlobalValue :: ValueRef -> IO Bool
+isAGlobalValue = FFI.isAGlobalValue
+
+isAFunction :: ValueRef -> IO Bool
+isAFunction = FFI.isAFunction
+
+isAGlobalAlias :: ValueRef -> IO Bool
+isAGlobalAlias = FFI.isAGlobalAlias
+
+isAGlobalVariable :: ValueRef -> IO Bool
+isAGlobalVariable = FFI.isAGlobalVariable
+
+isAUndefValue :: ValueRef -> IO Bool
+isAUndefValue = FFI.isAUndefValue
+
+isAInstruction :: ValueRef -> IO Bool
+isAInstruction = FFI.isAInstruction
+
+isABinaryOperator :: ValueRef -> IO Bool
+isABinaryOperator = FFI.isABinaryOperator
+
+isACallInst :: ValueRef -> IO Bool
+isACallInst = FFI.isACallInst
+
+isAIntrinsicInst :: ValueRef -> IO Bool
+isAIntrinsicInst = FFI.isAIntrinsicInst
+
+isADbgInfoIntrinsic :: ValueRef -> IO Bool
+isADbgInfoIntrinsic = FFI.isADbgInfoIntrinsic
+
+isADbgDeclareInst :: ValueRef -> IO Bool
+isADbgDeclareInst = FFI.isADbgDeclareInst
+
+isAMemIntrinsic :: ValueRef -> IO Bool
+isAMemIntrinsic = FFI.isAMemIntrinsic
+
+isAMemCpyInst :: ValueRef -> IO Bool
+isAMemCpyInst = FFI.isAMemCpyInst
+
+isAMemMoveInst :: ValueRef -> IO Bool
+isAMemMoveInst = FFI.isAMemMoveInst
+
+isAMemSetInst :: ValueRef -> IO Bool
+isAMemSetInst = FFI.isAMemSetInst
+
+isACmpInst :: ValueRef -> IO Bool
+isACmpInst = FFI.isACmpInst
+
+isAFCmpInst :: ValueRef -> IO Bool
+isAFCmpInst = FFI.isAFCmpInst
+
+isAICmpInst :: ValueRef -> IO Bool
+isAICmpInst = FFI.isAICmpInst
+
+isAExtractElementInst :: ValueRef -> IO Bool
+isAExtractElementInst = FFI.isAExtractElementInst
+
+isAGetElementPtrInst :: ValueRef -> IO Bool
+isAGetElementPtrInst = FFI.isAGetElementPtrInst
+
+isAInsertElementInst :: ValueRef -> IO Bool
+isAInsertElementInst = FFI.isAInsertElementInst
+
+isAInsertValueInst :: ValueRef -> IO Bool
+isAInsertValueInst = FFI.isAInsertValueInst
+
+isALandingPadInst :: ValueRef -> IO Bool
+isALandingPadInst = FFI.isALandingPadInst
+
+isAPHINode :: ValueRef -> IO Bool
+isAPHINode = FFI.isAPHINode
+
+isASelectInst :: ValueRef -> IO Bool
+isASelectInst = FFI.isASelectInst
+
+isAShuffleVectorInst :: ValueRef -> IO Bool
+isAShuffleVectorInst = FFI.isAShuffleVectorInst
+
+isAStoreInst :: ValueRef -> IO Bool
+isAStoreInst = FFI.isAStoreInst
+
+isATerminatorInst :: ValueRef -> IO Bool
+isATerminatorInst = FFI.isATerminatorInst
+
+isABranchInst :: ValueRef -> IO Bool
+isABranchInst = FFI.isABranchInst
+
+isAIndirectBrInst :: ValueRef -> IO Bool
+isAIndirectBrInst = FFI.isAIndirectBrInst
+
+isAInvokeInst :: ValueRef -> IO Bool
+isAInvokeInst = FFI.isAInvokeInst
+
+isAReturnInst :: ValueRef -> IO Bool
+isAReturnInst = FFI.isAReturnInst
+
+isASwitchInst :: ValueRef -> IO Bool
+isASwitchInst = FFI.isASwitchInst
+
+isAUnreachableInst :: ValueRef -> IO Bool
+isAUnreachableInst = FFI.isAUnreachableInst
+
+isAResumeInst :: ValueRef -> IO Bool
+isAResumeInst = FFI.isAResumeInst
+
+isAUnaryInstruction :: ValueRef -> IO Bool
+isAUnaryInstruction = FFI.isAUnaryInstruction
+
+isAAllocaInst :: ValueRef -> IO Bool
+isAAllocaInst = FFI.isAAllocaInst
+
+isACastInst :: ValueRef -> IO Bool
+isACastInst = FFI.isACastInst
+
+isABitCastInst :: ValueRef -> IO Bool
+isABitCastInst = FFI.isABitCastInst
+
+isAFPExtInst :: ValueRef -> IO Bool
+isAFPExtInst = FFI.isAFPExtInst
+
+isAFPToSIInst :: ValueRef -> IO Bool
+isAFPToSIInst = FFI.isAFPToSIInst
+
+isAFPToUIInst :: ValueRef -> IO Bool
+isAFPToUIInst = FFI.isAFPToUIInst
+
+isAFPTruncInst :: ValueRef -> IO Bool
+isAFPTruncInst = FFI.isAFPTruncInst
+
+isAIntToPtrInst :: ValueRef -> IO Bool
+isAIntToPtrInst = FFI.isAIntToPtrInst
+
+isAPtrToIntInst :: ValueRef -> IO Bool
+isAPtrToIntInst = FFI.isAPtrToIntInst
+
+isASExtInst :: ValueRef -> IO Bool
+isASExtInst = FFI.isASExtInst
+
+isASIToFPInst :: ValueRef -> IO Bool
+isASIToFPInst = FFI.isASIToFPInst
+
+isATruncInst :: ValueRef -> IO Bool
+isATruncInst = FFI.isATruncInst
+
+isAUIToFPInst :: ValueRef -> IO Bool
+isAUIToFPInst = FFI.isAUIToFPInst
+
+isAZExtInst :: ValueRef -> IO Bool
+isAZExtInst = FFI.isAZExtInst
+
+isAExtractValueInst :: ValueRef -> IO Bool
+isAExtractValueInst = FFI.isAExtractValueInst
+
+isALoadInst :: ValueRef -> IO Bool
+isALoadInst = FFI.isALoadInst
+
+isAVAArgInst :: ValueRef -> IO Bool
+isAVAArgInst = FFI.isAVAArgInst
 
 -- | Obtain the type of a value.
 typeOf :: ValueRef -> IO TypeRef
