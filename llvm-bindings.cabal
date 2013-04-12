@@ -43,6 +43,7 @@ library
     LLVM.BitReader
     LLVM.BitWriter
     LLVM.Core
+    LLVM.DebugInfo
     LLVM.Initialization
     LLVM.Target
     LLVM.Transforms.Scalar

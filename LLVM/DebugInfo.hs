@@ -30,6 +30,9 @@
 {-# OPTIONS_GHC -Wall -Werror #-}
 
 -- | This module contains common code for generating debugging information.
+-- 
+-- Note: the LLVM documentation of these structures is not very good.
+-- This API may change slightly as I investigate further.
 module LLVM.DebugInfo(
        llvmDebugVersion,
        compileUnitDesc,
@@ -39,13 +42,16 @@ module LLVM.DebugInfo(
        blockDesc,
        basicTypeDesc,
        derivedTypeDesc,
-       combinedTypeDesc,
+       compositeTypeDesc,
+       enumDesc,
        localVarDesc,
        argDesc,
        locationDesc
        ) where
 
 import Data.Dwarf
+import Data.Word
+import Data.Bits
 
 import qualified LLVM.Core as LLVM
 
@@ -54,7 +60,7 @@ llvmDebugVersion = 0x80000
 
 -- | Generate an LLVM metadata node containing debug info for a
 -- compilation unit.
-compileUnitDesc :: Num (n1, n2) => LLVM.ContextRef
+compileUnitDesc :: (Integral n1, Integral n2) => LLVM.ContextRef
                 -- ^ The LLVM context.
                 -> n1
                 -- ^ Language ID.
@@ -72,22 +78,39 @@ compileUnitDesc :: Num (n1, n2) => LLVM.ContextRef
                 -- ^ The flags for this compile unit.
                 -> n2
                 -- ^ The runtime version.
+                -> [LLVM.ValueRef]
+                -- ^ The list of descriptors for enum types.
+                -> [LLVM.ValueRef]
+                -- ^ The list of descriptors for retained types.
+                -> [LLVM.ValueRef]
+                -- ^ The list of descriptors for subprograms.
+                -> [LLVM.ValueRef]
+                -- ^ The list of descriptors for global variables.
                 -> IO LLVM.ValueRef
                 -- ^ The LLVM Metadata for this file descriptor.
-compileUnitDesc ctx lang file producer dir main opt flags vers =
+compileUnitDesc ctx lang file producer dir main opt flags
+                vers enums types subprogs gvars =
   do
     int1ty <- LLVM.int1TypeInContext ctx
     int32ty <- LLVM.int32TypeInContext ctx
-    tag <- LLVM.constInt int32ty (dwTag_compile_unit + llvmDebugVersion)
-    tag <- LLVM.constInt int32ty lang
-    zero <- LLVM.constInt int32ty 0
     filemd <- LLVM.mdStringInContext ctx file
     dirmd <- LLVM.mdStringInContext ctx dir
     producermd <- LLVM.mdStringInContext ctx producer
-    mainmd <- LLVM.constInt int1ty main
-    optmd <- LLVM.constInt int1ty opt
     flagsmd <- LLVM.mdStringInContext ctx flags
-    optmd <- LLVM.constInt int32ty vers
+    enummd <- LLVM.mdNodeInContext ctx enums
+    typemd <- LLVM.mdNodeInContext ctx types
+    subprogmd <- LLVM.mdNodeInContext ctx subprogs
+    gvarmd <- LLVM.mdNodeInContext ctx gvars
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty (dwTag_compile_unit + llvmDebugVersion) False,
+        LLVM.constInt int32ty (0 :: Word) False,
+        LLVM.constInt int32ty lang False,
+        filemd, dirmd, producermd,
+        LLVM.constInt int1ty (if main then 1 else 0 :: Word) False,
+        LLVM.constInt int1ty (if opt then 1 else 0 :: Word) False,
+        flagsmd,
+        LLVM.constInt int32ty vers False,
+        enummd, typemd, subprogmd, gvarmd ]
 
 -- | Generate an LLVM metadata node containing a file name.
 fileDesc :: LLVM.ContextRef
@@ -103,12 +126,14 @@ fileDesc ctx file dir =
     namemd <- LLVM.mdStringInContext ctx file
     dirmd <- LLVM.mdStringInContext ctx dir
     int32ty <- LLVM.int32TypeInContext ctx
-    tag <- LLVM.constInt int32ty (dwTag_variable + llvmDebugVersion)
     empty <- LLVM.mdNodeInContext ctx []
-    LLVM.mdNodeInContext ctx [ tag, namemd, dirmd, empty ]
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty (dwTag_variable + llvmDebugVersion) False,
+        namemd, dirmd, empty ]
 
 -- | Generate an LLVM metadata node describing a global variable declaration.
-globalVarDesc :: Num n => LLVM.ContextRef
+globalVarDesc :: Integral n
+              => LLVM.ContextRef
               -- ^ The LLVM context.
               -> LLVM.ValueRef
               -- ^ The metadata node for the compilation unit.
@@ -132,28 +157,30 @@ globalVarDesc :: Num n => LLVM.ContextRef
               -- compilation unit (not extern).
               -> LLVM.ValueRef
               -- ^ A reference to the actual global variable itself.
-              -> LLVM.ValueRef
+              -> IO LLVM.ValueRef
               -- ^ The LLVM Metadata for this global variable.
 globalVarDesc ctx compunitmd name dispname linkname filemd lineno
               typemd local defined ref =
   do
     int1ty <- LLVM.int1TypeInContext ctx
     int32ty <- LLVM.int32TypeInContext ctx
-    zero <- LLVM.constInt int32ty 0
-    tag <- LLVM.constInt int32ty (dwTag_compile_unit + llvmDebugVersion)
     namemd <- LLVM.mdStringInContext ctx name
     dispnamemd <- LLVM.mdStringInContext ctx dispname
     linknamemd <- LLVM.mdStringInContext ctx linkname
-    linenomd <- LLVM.constInt int32ty lineno
-    localmd <- LLVM.constInt int1ty local
-    definedmd <- LLVM.constInt int1ty defined
-    LLVM.mdNodeInContext ctx [ tag, zero, compunitmd, namemd, dispnamemd,
-                               linknamemd, filemd, linenomd, typemd,
-                               localmd, definedmd, ref ]
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty (dwTag_compile_unit + llvmDebugVersion) False,
+        LLVM.constInt int32ty (0 :: Word) False,
+        compunitmd, namemd, dispnamemd, linknamemd, filemd,
+        LLVM.constInt int32ty lineno False,
+        typemd,
+        LLVM.constInt int1ty (if local then 1 else 0 :: Word) False,
+        LLVM.constInt int1ty (if defined then 1 else 0 :: Word) False,
+        ref ]
 
 -- | Generate an LLVM metadata node containing information about a
 -- subprogram (ie a function).
-subprogramDesc :: Num (n1, n2, n3) => LLVM.ContextRef
+subprogramDesc :: (Integral n1, Integral n2, Integral n3)
+               => LLVM.ContextRef
                -- ^ The LLVM context.
                -> LLVM.ValueRef
                -- ^ The metadata node for the compilation unit.
@@ -195,54 +222,60 @@ subprogramDesc :: Num (n1, n2, n3) => LLVM.ContextRef
                -> IO LLVM.ValueRef
                -- ^ The LLVM metadata for this function.
 subprogramDesc ctx compunitmd dispname linkname filemd lineno typemd
-               local defined basetype basetype flags optimized ref
+               local defined basetype flags optimized ref
                tempparams funcdecl funcvars beginlineno =
   do
     int1ty <- LLVM.int1TypeInContext ctx
     int32ty <- LLVM.int32TypeInContext ctx
-    tag <- LLVM.constInt int32ty (dwTag_subprogram + llvmDebugVersion)
     dispnamemd <- LLVM.mdStringInContext ctx dispname
     linknamemd <- LLVM.mdStringInContext ctx linkname
-    linenomd <- LLVM.constInt int32ty lineno
-    localmd <- LLVM.constInt int1ty local
-    definedmd <- LLVM.constInt int1ty defined
-    flagsmd <- LLVM.constInt int32ty flags
-    optimizedmd <- LLVM.constInt int1ty optimized
-    beginlinenomd <- LLVM.constInt int32ty beginlineno
-    LLVM.mdNodeInContext ctx [ tag, zero, compunitmd, dispname, linkname,
-                               filemd, linenomd, typemd, localmd, definedmd,
-                               basetype, flagsmd, optimizedmd, ref,
-                               tempparams, funcdecl, funcvars, beginlinenomd ]
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty (dwTag_subprogram + llvmDebugVersion) False,
+        LLVM.constInt int32ty (0 :: Word) False,
+        compunitmd, dispnamemd, linknamemd, filemd,
+        LLVM.constInt int32ty lineno False,
+        typemd,
+        LLVM.constInt int1ty (if local then 1 else 0 :: Word) False,
+        LLVM.constInt int1ty (if defined then 1 else 0 :: Word) False,
+        basetype,
+        LLVM.constInt int32ty flags False,
+        LLVM.constInt int1ty (if optimized then 1 else 0 :: Word) False,
+        ref, tempparams, funcdecl, funcvars,
+        LLVM.constInt int32ty beginlineno False ]
 
 -- | Generate an LLVM metadata node containing debug information for a
 -- basic block.
-blockDesc :: LLVM.ContextRef
+blockDesc :: (Integral n1, Integral n2, Integral n3)
+          => LLVM.ContextRef
           -- ^ The LLVM context.
-          -> IO LLVM.ValueRef
+          -> LLVM.ValueRef
           -- ^ The metadata for the subprogram containing this block.
-          -> Word
+          -> n1
           -- ^ The line number.
-          -> Word
+          -> n2
           -- ^ The column number.
-          -> IO LLVM.ValueRef
+          -> LLVM.ValueRef
           -- ^ The metadata for the file.
-          -> Word
+          -> n3
           -- ^ A unique identifier (for template instantiations).
           -> IO LLVM.ValueRef
           -- ^ The metadata describing the block.
-blockDesc ctx subprogrammd lineno colno filemd id =
+blockDesc ctx subprogrammd lineno colno filemd uid =
   do
     int32ty <- LLVM.int32TypeInContext ctx
-    tag <- LLVM.constInt int32ty (dwTag_lexical_block + llvmDebugVersion)
-    linenomd <- LLVM.constInt int32ty lineno
-    colnomd <- LLVM.constInt int32ty colno
-    idmd <- LLVM.constInt int32ty id
-    LLVM.mdNodeInContext ctx [ tag, subprogrammd, linenomd,
-                               colnomd, filemd, idmd ]
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty (dwTag_lexical_block + llvmDebugVersion) False,
+        subprogrammd,
+        LLVM.constInt int32ty lineno False,
+        LLVM.constInt int32ty colno False,
+        filemd,
+        LLVM.constInt int32ty uid False ]
 
 -- | Generate an llvm metadata node containing debug information for a
 -- basic type.
-basicTypeDesc :: LLVM.ContextRef
+basicTypeDesc :: (Integral n1, Integral n2, Integral n3,
+                  Integral n4, Integral n5, Integral n6)
+              => LLVM.ContextRef
               -- ^ The LLVM context.
               -> LLVM.ValueRef
               -- ^ The metadata for the compilation unit declaring
@@ -251,40 +284,44 @@ basicTypeDesc :: LLVM.ContextRef
               -- ^ The type's name.
               -> LLVM.ValueRef
               -- ^ The metadata for the file.
-              -> Word
+              -> n1
               -- ^ The line number.
-              -> Word
+              -> n2
               -- ^ The size in bits.
-              -> Word
+              -> n3
               -- ^ The alignment in bits.
-              -> Word
+              -> n4
               -- ^ The offset in bits.
-              -> Word
+              -> n5
               -- ^ The flags.
-              -> Word
+              -> n6
               -- ^ The DWARF type encoding.
               -> IO LLVM.ValueRef
               -- ^ The LLVM metadata for this type.
 basicTypeDesc ctx compunitmd name filemd lineno size
-              align offset flags encoding=
+              align offset flags encoding =
   do
     int32ty <- LLVM.int32TypeInContext ctx
     int64ty <- LLVM.int64TypeInContext ctx
-    tag <- LLVM.constInt int32ty (dwTag_base_type + llvmDebugVersion)
-    namemd <- LLVM.mdStringInContext ctx file
-    linenomd <- LLVM.constInt int32ty lineno
-    sizemd <- LLVM.constInt int64ty size
-    alignmd <- LLVM.constInt int64ty align
-    offsetmd <- LLVM.constInt int64ty offset
-    flagsmd <- LLVM.constInt int32ty flags
-    encodingmd <- LLVM.constInt int32ty encoding
-    LLVM.mdNodeInContext ctx [ tag, compunitmd, namemd, filemd, linenomd,
-                               sizemd, alignmd, offsetmd, flagsmd, encodingmd ]
+    namemd <- LLVM.mdStringInContext ctx name
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty (dwTag_base_type + llvmDebugVersion) False,
+        compunitmd, namemd, filemd,
+        LLVM.constInt int32ty lineno False,
+        LLVM.constInt int64ty size False,
+        LLVM.constInt int64ty align False,
+        LLVM.constInt int64ty offset False,
+        LLVM.constInt int32ty flags False,
+        LLVM.constInt int32ty encoding False ]
 
 -- | Generate an LLVM metadata node containing debug information for a
 -- composite type.
-derivedTypeDesc :: LLVM.ContextRef
+derivedTypeDesc :: (Integral n1, Integral n2, Integral n3,
+                    Integral n4, Integral n5, Integral n6)
+                => LLVM.ContextRef
                 -- ^ The LLVM context.
+                -> n1
+                -- ^ The tag.
                 -> LLVM.ValueRef
                 -- ^ The metadata for the compilation unit declaring
                 -- this type.
@@ -292,40 +329,44 @@ derivedTypeDesc :: LLVM.ContextRef
                 -- ^ The type's name.
                 -> LLVM.ValueRef
                 -- ^ The metadata for the file.
-                -> Word
+                -> n2
                 -- ^ The line number.
-                -> Word
+                -> n3
                 -- ^ The size in bits.
-                -> Word
+                -> n4
                 -- ^ The alignment in bits.
-                -> Word
+                -> n5
                 -- ^ The offset in bits.
-                -> Word
+                -> n6
                 -- ^ The flags.
                 -> LLVM.ValueRef
                 -- ^ The metadata for the type from which this is derived
                 -> IO LLVM.ValueRef
                 -- ^ The metadata for this type.
 derivedTypeDesc ctx tag compunitmd name filemd lineno
-                size align offset flags, derivemd =
+                size align offset flags derivemd =
   do
     int64ty <- LLVM.int64TypeInContext ctx
     int32ty <- LLVM.int32TypeInContext ctx
-    tag' <- LLVM.constInt int32ty (tag + llvmDebugVersion)
-    namemd <- LLVM.mdStringInContext ctx file
-    linenomd <- LLVM.constInt int32ty lineno
-    sizemd <- LLVM.constInt int64ty size
-    alignmd <- LLVM.constInt int64ty align
-    offsetmd <- LLVM.constInt int64ty offset
-    flagsmd <- LLVM.constInt int32ty flags
-    LLVM.mdNodeInContext ctx [ tag', compunitmd, compunitmd, namemd,
-                               filemd, linenomd, sizemd, alignmd,
-                               offsetmd, flagsmd, derivemd ]
+    namemd <- LLVM.mdStringInContext ctx name
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty ((fromIntegral tag) + llvmDebugVersion) False,
+        compunitmd, compunitmd, namemd, filemd,
+        LLVM.constInt int32ty lineno False,
+        LLVM.constInt int64ty size False,
+        LLVM.constInt int64ty align False,
+        LLVM.constInt int64ty offset False,
+        LLVM.constInt int32ty flags False,
+        derivemd ]
 
 -- | Generate an LLVM metadata node containing debug information for a
 -- composite type.
-compositeTypeDesc :: Num (n1, n2, n3, n4, n5) => LLVM.ContextRef
+compositeTypeDesc :: (Integral n1, Integral n2, Integral n3,
+                      Integral n4, Integral n5, Integral n6)
+                  => LLVM.ContextRef
                   -- ^ The LLVM context.
+                  -> n1
+                  -- ^ The tag
                   -> LLVM.ValueRef
                   -- ^ The metadata for the compilation unit declaring
                   -- this type.
@@ -333,15 +374,15 @@ compositeTypeDesc :: Num (n1, n2, n3, n4, n5) => LLVM.ContextRef
                   -- ^ The type's name.
                   -> LLVM.ValueRef
                   -- ^ The metadata for the file.
-                  -> n1
-                  -- ^ The line number.
                   -> n2
-                  -- ^ The size in bits.
+                  -- ^ The line number.
                   -> n3
-                  -- ^ The alignment in bits.
+                  -- ^ The size in bits.
                   -> n4
-                  -- ^ The offset in bits.
+                  -- ^ The alignment in bits.
                   -> n5
+                  -- ^ The offset in bits.
+                  -> n6
                   -- ^ The flags.
                   -> LLVM.ValueRef
                   -- ^ The metadata for the type from which this is derived
@@ -350,24 +391,24 @@ compositeTypeDesc :: Num (n1, n2, n3, n4, n5) => LLVM.ContextRef
                   -> IO LLVM.ValueRef
                   -- ^ The metadata for this type.
 compositeTypeDesc ctx tag compunitmd name filemd lineno size
-                  align offset flags, derivemd membersmd =
+                  align offset flags derivemd membersmd =
   do
     int64ty <- LLVM.int64TypeInContext ctx
     int32ty <- LLVM.int32TypeInContext ctx
-    tag' <- LLVM.constInt int32ty (tag + llvmDebugVersion)
-    namemd <- LLVM.mdStringInContext ctx file
-    linenomd <- LLVM.constInt int32ty lineno
-    sizemd <- LLVM.constInt int64ty size
-    alignmd <- LLVM.constInt int64ty align
-    offsetmd <- LLVM.constInt int64ty offset
-    flagsmd <- LLVM.constInt int32ty flags
-    LLVM.mdNodeInContext ctx [ tag', compunitmd, compunitmd, namemd,
-                               filemd, linenomd, sizemd, alignmd,
-                               offsetmd, flagsmd, derivemd, membersmd ]
+    namemd <- LLVM.mdStringInContext ctx name
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty ((fromIntegral tag) + llvmDebugVersion) False,
+        compunitmd, compunitmd, namemd, filemd,
+        LLVM.constInt int32ty lineno False,
+        LLVM.constInt int64ty size False,
+        LLVM.constInt int64ty align False,
+        LLVM.constInt int64ty offset False,
+        LLVM.constInt int32ty flags False,
+        derivemd, membersmd ]
 
 -- | Generate an LLVM metadata node containing debug information for
 -- an enum value
-enumDesc :: Num n => LLVM.ContextRef
+enumDesc :: Integral n => LLVM.ContextRef
          -- ^ The LLVM context.
          -> String
          -- ^ The name.
@@ -378,13 +419,16 @@ enumDesc :: Num n => LLVM.ContextRef
 enumDesc ctx name value =
   do
     int32ty <- LLVM.int32TypeInContext ctx
-    tag <- LLVM.constInt int32ty (dwTag_enumerator + llvmDebugVersion)
-    namemd <- LLVM.mdStringInContext ctx file
-    LLVM.mdNodeInContext ctx [ tag, namemd, valuemd ]
+    namemd <- LLVM.mdStringInContext ctx name
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty (dwTag_enumerator + llvmDebugVersion) False,
+        namemd,
+        LLVM.constInt int32ty value False ]
 
 -- | Generate an LLVM metadata node containing debug information for a
 -- local variable.
-localVarDesc :: Num (n1, n2) => LLVM.ContextRef
+localVarDesc :: (Integral n1, Integral n2)
+             => LLVM.ContextRef
              -- ^ The LLVM context.
              -> LLVM.ValueRef
              -- ^ The metadata for the lexical block declaring this
@@ -404,16 +448,17 @@ localVarDesc :: Num (n1, n2) => LLVM.ContextRef
 localVarDesc ctx blockmd name filemd lineno typemd flags =
   do
     int32ty <- LLVM.int32TypeInContext ctx
-    tag <- LLVM.constInt int32ty (dwTag_auto_variable + llvmDebugVersion)
-    namemd <- LLVM.mdStringInContext ctx file
-    linenomd <- LLVM.constInt int32ty lineno
-    flagsmd <- LLVM.constInt int32ty flags
-    LLVM.mdNodeInContext ctx [ tag, blockmd, namemd, filemd,
-                               linenomd, typemd flagsmd ]
+    namemd <- LLVM.mdStringInContext ctx name
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty (256 + llvmDebugVersion) False,
+        blockmd, namemd, filemd,
+        LLVM.constInt int32ty lineno False,
+        typemd,
+        LLVM.constInt int32ty flags False ]
 
 -- | Generate an LLVM metadata node containing debug information for
 -- an argument
-argDesc :: Num (n1, n2, n3) => LLVM.ContextRef
+argDesc :: (Integral n1, Integral n2, Integral n3) => LLVM.ContextRef
         -- ^ The LLVM Context
         -> LLVM.ValueRef
         -- ^ The block metadata for the declarer of this variable
@@ -434,15 +479,17 @@ argDesc :: Num (n1, n2, n3) => LLVM.ContextRef
 argDesc ctx blockmd name filemd lineno argno typemd flags =
   do
     int32ty <- LLVM.int32TypeInContext ctx
-    tag <- LLVM.constInt int32ty (dwTag_arg_variable + llvmDebugVersion)
-    namemd <- LLVM.mdStringInContext ctx file
-    linenomd <- LLVM.constInt int32ty ((shiftL argno 24) .|. lineno)
-    flagsmd <- LLVM.constInt int32ty flags
-    LLVM.mdNodeInContext ctx [ tag, blockmd, namemd, filemd,
-                               linenomd, typemd flagsmd ]
+    namemd <- LLVM.mdStringInContext ctx name
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty (257 + llvmDebugVersion) False,
+        blockmd, namemd, filemd,
+        LLVM.constInt int32ty ((shiftL (fromIntegral argno) 24) .|.
+                               (fromIntegral lineno) :: Word) False,
+        typemd,
+        LLVM.constInt int32ty flags False ]
 
 -- | Generate an LLVM metadata node giving a location.
-locationDesc :: Num (n1, n2) => LLVM.ContextRef
+locationDesc :: (Integral n1, Integral n2) => LLVM.ContextRef
               -- ^ The LLVM Context.
               -> n1
               -- ^ The line number.
@@ -451,10 +498,11 @@ locationDesc :: Num (n1, n2) => LLVM.ContextRef
               -> LLVM.ValueRef
               -- ^ The metadata node for the lexical block containing
               -- this.
-              -> IO ()
-locationDesc ctx val lineno colno blockmd =
+              -> IO LLVM.ValueRef
+locationDesc ctx lineno colno blockmd =
   do
     int32ty <- LLVM.int32TypeInContext ctx
-    linenomd <- LLVM.constInt int32ty lineno
-    colnomd <- LLVM.constInt int32ty colno
-    LLVM.mdNodeInContext ctx [ linenomd, colnomd, blockmd ]
+    LLVM.mdNodeInContext ctx
+      [ LLVM.constInt int32ty lineno False,
+        LLVM.constInt int32ty colno False,
+        blockmd ]
