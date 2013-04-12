@@ -1,5 +1,5 @@
 name:			llvm-bindings
-version:		3.1.0.2
+version:		3.2.0.0
 license:		BSD3
 synopsis:		LLVM Bindings for Haskell
 description:
@@ -18,7 +18,7 @@ description:
   optimization, and the execution engine are not supported in this
   version.  Support is planned for later versions.
 author:			Eric McCorkle
-maintainer:		Eric McCorkle <eric@shadowsun.net>
+maintainer:		Eric McCorkle <emc2@metricspace.net>
 stability:		Alpha
 category:		Compilers/Interpreters, Code Generation
 build-type:		Custom
@@ -43,6 +43,7 @@ library
     LLVM.BitReader
     LLVM.BitWriter
     LLVM.Core
+    LLVM.DebugInfo
     LLVM.Initialization
     LLVM.Target
     LLVM.Transforms.Scalar
@@ -57,6 +58,8 @@ library
     LLVM.FFI.Transforms.Scalar
     LLVM.FFI.Transforms.IPO
     LLVM.FFI.Transforms.Vectorize
+  other-modules:
+    Data.Dwarf
 
 source-repository head
   type: git
