@@ -1,5 +1,5 @@
 name:			llvm-bindings
-version:		3.1.1.0
+version:		3.2.0.0
 license:		BSD3
 synopsis:		LLVM Bindings for Haskell
 description:
@@ -18,7 +18,7 @@ description:
   optimization, and the execution engine are not supported in this
   version.  Support is planned for later versions.
 author:			Eric McCorkle
-maintainer:		Eric McCorkle <eric@shadowsun.net>
+maintainer:		Eric McCorkle <emc2@metricspace.net>
 stability:		Alpha
 category:		Compilers/Interpreters, Code Generation
 build-type:		Custom
