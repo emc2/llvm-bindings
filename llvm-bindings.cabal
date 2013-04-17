@@ -1,5 +1,5 @@
 name:			llvm-bindings
-version:		3.2.0.1
+version:		3.2.1.0
 license:		BSD3
 synopsis:		LLVM Bindings for Haskell
 description:
@@ -39,6 +39,7 @@ library
   build-depends:	base
   build-tools:		hsc2hs
   exposed-modules:
+    Control.Monad.LLVM.LLVMContext.Class
     LLVM.Analysis
     LLVM.BitReader
     LLVM.BitWriter
