@@ -463,7 +463,7 @@ argDesc :: (Integral n1, Integral n2, Integral n3) => LLVM.ContextRef
         -> LLVM.ValueRef
         -- ^ The block metadata for the declarer of this variable
         -> String
-        -- ^ The file name
+        -- ^ The argument's name
         -> LLVM.ValueRef
         -- ^ The metadata for the file declaring this variable
         -> n1
