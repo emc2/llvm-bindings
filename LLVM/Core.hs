@@ -1,4 +1,4 @@
--- Copyright (c) 2012 Eric McCorkle.  All rights reserved.
+-- Copyright (c) 2013 Eric McCorkle.  All rights reserved.
 --
 -- Portions of this code are derived from software originally written
 -- by Brian O' Sullivan.  Comments are copied in part from software
@@ -7,11 +7,14 @@
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions
 -- are met:
+--
 -- 1. Redistributions of source code must retain the above copyright
 --    notice, this list of conditions and the following disclaimer.
+--
 -- 2. Redistributions in binary form must reproduce the above copyright
 --    notice, this list of conditions and the following disclaimer in the
 --    documentation and/or other materials provided with the distribution.
+--
 -- 3. Neither the name of the author nor the names of any contributors
 --    may be used to endorse or promote products derived from this software
 --    without specific prior written permission.
@@ -28,7 +31,6 @@
 -- OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 -- OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 -- SUCH DAMAGE.
-
 
 -- | Bindings for llvm-c/Core.h, wrapped in utility code to make them
 -- more usable for general purposes.
@@ -748,23 +750,28 @@ getGlobalContext = FFI.getGlobalContext
 -- will be leaked.
 contextDispose = FFI.contextDispose
 contextDispose :: ContextRef
-                  -- ^ Context to destroy.
-                  -> IO ()
+               -- ^ Context to destroy.
+               -> IO ()
 
-getMDKindIDInContext :: Num n => ContextRef
-                        -- ^ Context
-                        -> String
-                        -- ^ Metadata name
-                        -> IO n
+-- | Get the kind ID for a metadata tag.  This is used to attach
+-- specific metadata to an instruction.  For example, look up "dbg" to
+-- get the kind ID used to attach !dbg metadata.
+getMDKindIDInContext :: Num n
+                     => ContextRef
+                     -- ^ Context
+                     -> String
+                     -- ^ Metadata name
+                     -> IO n
 getMDKindIDInContext ctx str =
   withCString str
     (\cstr ->
       FFI.getMDKindIDInContext ctx cstr (fromIntegral (length str)) >>=
         return . fromIntegral)
 
-getMDKindID :: Num n => String
-               -- ^ Metadata name
-               -> IO n
+getMDKindID :: Num n
+            => String
+            -- ^ Metadata name
+            -> IO n
 getMDKindID str =
   withCString str
     (\cstr ->
