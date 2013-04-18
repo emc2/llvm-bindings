@@ -29,23 +29,21 @@
 -- SUCH DAMAGE.
 {-# OPTIONS_GHC -funbox-strict-fields -Wall -Werror #-}
 
--- | This module defines a monad which carries an LLVM context 
+-- | This module defines a monad which carries an LLVM context.
 module Control.Monad.LLVM.LLVMContext.Class(
-       LLVMContext(..)
+       MonadLLVMContext(..)
        ) where
 
 import Control.Monad.Trans
-import LLVM.Core(ModuleRef, ContextRef, ValueRef, TypeRef,
+import LLVM.Core(ModuleRef, ValueRef, TypeRef,
                  BasicBlockRef, BuilderRef)
 
-class MonadIO m => LLVMContext m where
+class MonadIO m => MonadLLVMContext m where
   -- | Get the kind ID for a metadata tag.  This is used to attach
   -- specific metadata to an instruction.  For example, look up "dbg" to
   -- get the kind ID used to attach !dbg metadata.
   getMDKindIDInContext :: Num n
-                       => ContextRef
-                       -- ^ Context
-                       -> String
+                       => String
                        -- ^ Metadata name
                        -> m n
 
