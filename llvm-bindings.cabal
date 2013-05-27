@@ -3,20 +3,31 @@ version:		3.2.1.1
 license:		BSD3
 synopsis:		LLVM Bindings for Haskell
 description:
-  Simple LLVM indings library for Haskell.  Contains raw FFI bindings,
-  as well as more Haskell-friendly versions.
+  A simple LLVM bindings library for Haskell.  The modules in
+  LLVM.FFI.* Contain raw FFI bindings, while those in LLVM.* contain
+  more Haskell-friendly versions.  The Control.Monad.LLVM.* modules
+  contain monads which encapsulate some of the more ubiquitous state
+  objects (ContextRef, ModuleRef, and BuilderRef) in a Reader monad.
 
-  Bindings are created against the LLVM C bindings primarily.
+  Bindings are created against the LLVM C bindings library, and follow
+  the llvm library's major version updates.  The LLVM C bindings
+  library "lazily" adds bindings as requested; therefore, if a
+  particular function is desired for this library, it should be
+  requested of the LLVM maintainers first, then added to this library.
 
   Version major and minor numbers track the primary LLVM release
   targeted by the library.  Backwards compatibility against previous
   LLVM versions depends primarily on whether or not LLVM itself
   guarantees such compatibility.
 
-  This release focuses on providing an interface to LLVM as a compiler
-  backend.  Disassembly and object file features, link-time
-  optimization, and the execution engine are not supported in this
-  version.  Support is planned for later versions.
+  At present, this library focuses on providing an interface to LLVM
+  as a compiler backend.  The disassembly and object file, link-time
+  optimization, and the execution engine C APIs are not supported at
+  this time.
+
+  This library tends not to behave well in ghci, due to improper
+  handling of C++ linking cruft.  However, it should work fine when
+  compiled into a program.
 author:			Eric McCorkle
 maintainer:		Eric McCorkle <emc2@metricspace.net>
 stability:		Alpha
@@ -39,6 +50,7 @@ library
   build-depends:	base, mtl
   build-tools:		hsc2hs
   exposed-modules:
+    Control.Monad.LLVM.LLVMBuilder
     Control.Monad.LLVM.LLVMBuilder.Class
     Control.Monad.LLVM.LLVMContext
     Control.Monad.LLVM.LLVMContext.Class
