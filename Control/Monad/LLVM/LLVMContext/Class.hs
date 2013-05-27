@@ -38,6 +38,7 @@ import Control.Monad.Trans
 import LLVM.Core(ModuleRef, ValueRef, TypeRef,
                  BasicBlockRef, BuilderRef)
 
+-- | Class for monads that carry LLVM context information
 class MonadIO m => MonadLLVMContext m where
   -- | Get the kind ID for a metadata tag.  This is used to attach
   -- specific metadata to an instruction.  For example, look up "dbg" to
