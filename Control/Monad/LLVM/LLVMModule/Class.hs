@@ -35,7 +35,7 @@ module Control.Monad.LLVM.LLVMModule.Class(
        ) where
 
 import Control.Monad.Trans
-import LLVM.Core(ModuleRef, ContextRef, ValueRef, TypeRef)
+import LLVM.Core(ContextRef, ValueRef, TypeRef)
 
 -- | Class for monads that carry LLVM context information
 class MonadIO m => MonadLLVMModule m where
@@ -116,9 +116,7 @@ class MonadIO m => MonadLLVMModule m where
   addGlobal :: TypeRef -> String -> m ValueRef
 
   addGlobalInAddressSpace :: Integral n
-                          => ModuleRef
-                          -- ^ Module
-                          -> TypeRef
+                          => TypeRef
                           -- ^ Type
                           -> String
                           -- ^ Name
