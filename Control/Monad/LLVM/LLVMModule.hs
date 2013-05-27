@@ -43,6 +43,7 @@ module Control.Monad.LLVM.LLVMModule(
 import Control.Applicative
 import Control.Monad.Cont.Class
 import Control.Monad.Error.Class
+import Control.Monad.LLVM.LLVMBuilder.Class
 import Control.Monad.LLVM.LLVMContext.Class
 import Control.Monad.LLVM.LLVMModule.Class
 import Control.Monad.Writer.Class
@@ -259,6 +260,110 @@ instance MonadLLVMContext m => MonadLLVMContext (LLVMModuleT m) where
   appendBasicBlockInContext block = lift . appendBasicBlockInContext block
   insertBasicBlockInContext block = lift . insertBasicBlockInContext block
   createBuilderInContext = lift createBuilderInContext
+
+instance MonadLLVMBuilder m => MonadLLVMBuilder (LLVMModuleT m) where
+  positionBuilder block = lift . positionBuilder block
+  positionBefore = lift . positionBefore
+  positionAtEnd = lift . positionAtEnd
+  getInsertBlock = lift getInsertBlock
+  clearInsertionPosition = lift clearInsertionPosition
+  insertIntoBuilder =  lift . insertIntoBuilder
+  insertIntoBuilderWithName instr =
+    lift . insertIntoBuilderWithName instr
+  getCurrentDebugLocation = lift getCurrentDebugLocation
+  setCurrentDebugLocation = lift . setCurrentDebugLocation
+  setInstDebugLocation = lift . setInstDebugLocation
+  buildRetVoid = lift buildRetVoid
+  buildRet = lift . buildRet
+  buildAggregateRet = lift . buildAggregateRet
+  buildBr = lift . buildBr
+  buildCondBr test true = lift . buildCondBr test true
+  buildSwitch test def = lift . buildSwitch test def
+  buildIndirectBr addr = lift . buildIndirectBr addr
+  buildInvoke func args ret catchblk =
+    lift . buildInvoke func args ret catchblk
+  buildLandingPad ty pers nclauses =
+    lift . buildLandingPad ty pers nclauses
+  buildResume = lift . buildResume
+  buildUnreachable = lift buildUnreachable
+  buildAdd left right = lift . buildAdd left right
+  buildNSWAdd left right = lift . buildNSWAdd left right
+  buildNUWAdd left right = lift . buildNUWAdd left right
+  buildFAdd left right = lift . buildFAdd left right
+  buildSub left right = lift . buildSub left right
+  buildNSWSub left right = lift . buildNSWSub left right
+  buildNUWSub left right = lift . buildNUWSub left right
+  buildFSub left right = lift . buildFSub left right
+  buildMul left right = lift . buildMul left right
+  buildNSWMul left right = lift . buildNSWMul left right
+  buildNUWMul left right = lift . buildNUWMul left right
+  buildFMul left right = lift . buildFMul left right
+  buildUDiv left right = lift . buildUDiv left right
+  buildSDiv left right = lift . buildSDiv left right
+  buildExactSDiv left right = lift . buildExactSDiv left right
+  buildFDiv left right = lift . buildFDiv left right
+  buildURem left right = lift . buildURem left right
+  buildSRem left right = lift . buildSRem left right
+  buildFRem left right = lift . buildFRem left right
+  buildShl left right = lift . buildShl left right
+  buildAShr left right = lift . buildAShr left right
+  buildLShr left right = lift . buildLShr left right
+  buildAnd left right = lift . buildAnd left right
+  buildOr left right = lift . buildOr left right
+  buildXor left right = lift . buildXor left right
+  buildBinOp op left right = lift . buildBinOp op left right
+  buildNeg val = lift . buildNeg val
+  buildNSWNeg val = lift . buildNSWNeg val
+  buildNUWNeg val = lift . buildNUWNeg val
+  buildFNeg val = lift . buildFNeg val
+  buildNot val = lift . buildNot val
+  buildMalloc ty = lift . buildMalloc ty
+  buildArrayMalloc ty nelems = lift . buildArrayMalloc ty nelems
+  buildAlloca ty = lift . buildAlloca ty
+  buildArrayAlloca ty nelems = lift . buildArrayAlloca ty nelems
+  buildFree = lift . buildFree
+  buildLoad addr = lift . buildLoad addr
+  buildStore val = lift . buildStore val
+  buildGEP addr indexes = lift . buildGEP addr indexes
+  buildInBoundsGEP addr indexes = lift . buildInBoundsGEP addr indexes
+  buildStructGEP addr index = lift . buildStructGEP addr index
+  buildGlobalString str = lift . buildGlobalString str
+  buildGlobalStringPtr str = lift . buildGlobalStringPtr str
+  buildTrunc val ty = lift . buildTrunc val ty
+  buildZExt val ty = lift . buildZExt val ty
+  buildSExt val ty = lift . buildSExt val ty
+  buildFPToUI val ty = lift . buildFPToUI val ty
+  buildFPToSI val ty = lift . buildFPToSI val ty
+  buildUIToFP val ty = lift . buildUIToFP val ty
+  buildSIToFP val ty = lift . buildSIToFP val ty
+  buildFPTrunc val ty = lift . buildFPTrunc val ty
+  buildFPExt val ty = lift . buildFPExt val ty
+  buildIntToPtr val ty = lift . buildIntToPtr val ty
+  buildPtrToInt val ty = lift . buildPtrToInt val ty
+  buildBitCast val ty = lift . buildBitCast val ty
+  buildZExtOrBitCast val ty = lift . buildZExtOrBitCast val ty
+  buildSExtOrBitCast val ty = lift . buildSExtOrBitCast val ty
+  buildTruncOrBitCast val ty = lift . buildTruncOrBitCast val ty
+  buildCast op val ty = lift . buildCast op val ty
+  buildPointerCast val ty = lift . buildPointerCast val ty
+  buildIntCast val ty = lift . buildIntCast val ty
+  buildFPCast val ty = lift . buildFPCast val ty
+  buildICmp op left right = lift . buildICmp op left right
+  buildFCmp op left right = lift . buildFCmp op left right
+  buildPhi ty = lift . buildPhi ty
+  buildCall func args = lift . buildCall func args
+  buildSelect test true false = lift . buildSelect test true false
+  buildVAArg val ty = lift . buildVAArg val ty
+  buildExtractElement val index = lift . buildExtractElement val index
+  buildInsertElement val elemval index =
+    lift . buildInsertElement val elemval index
+  buildShuffleVector v1 v2 mask = lift . buildShuffleVector v1 v2 mask
+  buildExtractValue val index = lift . buildExtractValue val index
+  buildInsertValue val elemval index =
+    lift . buildInsertValue val elemval index
+  buildIsNull val = lift . buildIsNull val
+  buildIsNotNull val = lift . buildIsNotNull val
+  buildPtrDiff left right = lift . buildPtrDiff left right
 
 instance Functor m => Functor (LLVMModuleT m) where
   fmap f  = LLVMModuleT . mapReaderT (fmap f) . unpackLLVMModuleT
