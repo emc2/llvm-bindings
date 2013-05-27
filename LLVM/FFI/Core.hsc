@@ -1783,7 +1783,7 @@ foreign import ccall unsafe "LLVMVectorType"
 --
 -- This only works on types that represent vectors.
 foreign import ccall unsafe "LLVMGetVectorSize"
-  getVectorSize :: TypeRef -> IO CUInt
+  getVectorSize :: TypeRef -> CUInt
 
 -- ** Other types
 
@@ -1805,215 +1805,215 @@ foreign import ccall unsafe "LLVMX86MMXType" x86MMXType :: TypeRef
 
 -- * Values
 foreign import ccall unsafe "LLVMIsAArgument"
-  isAArgument :: ValueRef -> IO Bool
+  isAArgument :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsABasicBlock"
-  isABasicBlock :: ValueRef -> IO Bool
+  isABasicBlock :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAInlineAsm"
-  isAInlineAsm :: ValueRef -> IO Bool
+  isAInlineAsm :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAMDNode"
-  isAMDNode :: ValueRef -> IO Bool
+  isAMDNode :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAMDString"
-  isAMDString :: ValueRef -> IO Bool
+  isAMDString :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAUser"
-  isAUser :: ValueRef -> IO Bool
+  isAUser :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAConstant"
-  isAConstant :: ValueRef -> IO Bool
+  isAConstant :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsABlockAddress"
-  isABlockAddress :: ValueRef -> IO Bool
+  isABlockAddress :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAConstantAggregateZero"
-  isAConstantAggregateZero :: ValueRef -> IO Bool
+  isAConstantAggregateZero :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAConstantArray"
-  isAConstantArray :: ValueRef -> IO Bool
+  isAConstantArray :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAConstantExpr"
-  isAConstantExpr :: ValueRef -> IO Bool
+  isAConstantExpr :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAConstantFP"
-  isAConstantFP :: ValueRef -> IO Bool
+  isAConstantFP :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAConstantInt"
-  isAConstantInt :: ValueRef -> IO Bool
+  isAConstantInt :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAConstantPointerNull"
-  isAConstantPointerNull :: ValueRef -> IO Bool
+  isAConstantPointerNull :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAConstantStruct"
-  isAConstantStruct :: ValueRef -> IO Bool
+  isAConstantStruct :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAConstantVector"
-  isAConstantVector :: ValueRef -> IO Bool
+  isAConstantVector :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAGlobalValue"
-  isAGlobalValue :: ValueRef -> IO Bool
+  isAGlobalValue :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAFunction"
-  isAFunction :: ValueRef -> IO Bool
+  isAFunction :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAGlobalAlias"
-  isAGlobalAlias :: ValueRef -> IO Bool
+  isAGlobalAlias :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAGlobalVariable"
-  isAGlobalVariable :: ValueRef -> IO Bool
+  isAGlobalVariable :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAUndefValue"
-  isAUndefValue :: ValueRef -> IO Bool
+  isAUndefValue :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAInstruction"
-  isAInstruction :: ValueRef -> IO Bool
+  isAInstruction :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsABinaryOperator"
-  isABinaryOperator :: ValueRef -> IO Bool
+  isABinaryOperator :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsACallInst"
-  isACallInst :: ValueRef -> IO Bool
+  isACallInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAIntrinsicInst"
-  isAIntrinsicInst :: ValueRef -> IO Bool
+  isAIntrinsicInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsADbgInfoIntrinsic"
-  isADbgInfoIntrinsic :: ValueRef -> IO Bool
+  isADbgInfoIntrinsic :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsADbgDeclareInst"
-  isADbgDeclareInst :: ValueRef -> IO Bool
+  isADbgDeclareInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAMemIntrinsic"
-  isAMemIntrinsic :: ValueRef -> IO Bool
+  isAMemIntrinsic :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAMemCpyInst"
-  isAMemCpyInst :: ValueRef -> IO Bool
+  isAMemCpyInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAMemMoveInst"
-  isAMemMoveInst :: ValueRef -> IO Bool
+  isAMemMoveInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAMemSetInst"
-  isAMemSetInst :: ValueRef -> IO Bool
+  isAMemSetInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsACmpInst"
-  isACmpInst :: ValueRef -> IO Bool
+  isACmpInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAFCmpInst"
-  isAFCmpInst :: ValueRef -> IO Bool
+  isAFCmpInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAICmpInst"
-  isAICmpInst :: ValueRef -> IO Bool
+  isAICmpInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAExtractElementInst"
-  isAExtractElementInst :: ValueRef -> IO Bool
+  isAExtractElementInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAGetElementPtrInst"
-  isAGetElementPtrInst :: ValueRef -> IO Bool
+  isAGetElementPtrInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAInsertElementInst"
-  isAInsertElementInst :: ValueRef -> IO Bool
+  isAInsertElementInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAInsertValueInst"
-  isAInsertValueInst :: ValueRef -> IO Bool
+  isAInsertValueInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsALandingPadInst"
-  isALandingPadInst :: ValueRef -> IO Bool
+  isALandingPadInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAPHINode"
-  isAPHINode :: ValueRef -> IO Bool
+  isAPHINode :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsASelectInst"
-  isASelectInst :: ValueRef -> IO Bool
+  isASelectInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAShuffleVectorInst"
-  isAShuffleVectorInst :: ValueRef -> IO Bool
+  isAShuffleVectorInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAStoreInst"
-  isAStoreInst :: ValueRef -> IO Bool 
+  isAStoreInst :: ValueRef -> Bool 
 
 foreign import ccall unsafe "LLVMIsATerminatorInst"
-  isATerminatorInst :: ValueRef -> IO Bool
+  isATerminatorInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsABranchInst"
-  isABranchInst :: ValueRef -> IO Bool
+  isABranchInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAIndirectBrInst"
-  isAIndirectBrInst :: ValueRef -> IO Bool
+  isAIndirectBrInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAInvokeInst"
-  isAInvokeInst :: ValueRef -> IO Bool
+  isAInvokeInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAReturnInst"
-  isAReturnInst :: ValueRef -> IO Bool
+  isAReturnInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsASwitchInst"
-  isASwitchInst :: ValueRef -> IO Bool
+  isASwitchInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAUnreachableInst"
-  isAUnreachableInst :: ValueRef -> IO Bool
+  isAUnreachableInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAResumeInst"
-  isAResumeInst :: ValueRef -> IO Bool
+  isAResumeInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAUnaryInstruction"
-  isAUnaryInstruction :: ValueRef -> IO Bool
+  isAUnaryInstruction :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAAllocaInst"
-  isAAllocaInst :: ValueRef -> IO Bool
+  isAAllocaInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsACastInst"
-  isACastInst :: ValueRef -> IO Bool
+  isACastInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsABitCastInst"
-  isABitCastInst :: ValueRef -> IO Bool
+  isABitCastInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAFPExtInst"
-  isAFPExtInst :: ValueRef -> IO Bool 
+  isAFPExtInst :: ValueRef -> Bool 
 
 foreign import ccall unsafe "LLVMIsAFPToSIInst"
-  isAFPToSIInst :: ValueRef -> IO Bool
+  isAFPToSIInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAFPToUIInst"
-  isAFPToUIInst :: ValueRef -> IO Bool
+  isAFPToUIInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAFPTruncInst"
-  isAFPTruncInst :: ValueRef -> IO Bool
+  isAFPTruncInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAIntToPtrInst"
-  isAIntToPtrInst :: ValueRef -> IO Bool
+  isAIntToPtrInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAPtrToIntInst"
-  isAPtrToIntInst :: ValueRef -> IO Bool
+  isAPtrToIntInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsASExtInst"
-  isASExtInst :: ValueRef -> IO Bool
+  isASExtInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsASIToFPInst"
-  isASIToFPInst :: ValueRef -> IO Bool
+  isASIToFPInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsATruncInst"
-  isATruncInst :: ValueRef -> IO Bool 
+  isATruncInst :: ValueRef -> Bool 
 
 foreign import ccall unsafe "LLVMIsAUIToFPInst"
-  isAUIToFPInst :: ValueRef -> IO Bool
+  isAUIToFPInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAZExtInst"
-  isAZExtInst :: ValueRef -> IO Bool
+  isAZExtInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAExtractValueInst"
-  isAExtractValueInst :: ValueRef -> IO Bool
+  isAExtractValueInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsALoadInst"
-  isALoadInst :: ValueRef -> IO Bool
+  isALoadInst :: ValueRef -> Bool
 
 foreign import ccall unsafe "LLVMIsAVAArgInst"
-  isAVAArgInst :: ValueRef -> IO Bool
+  isAVAArgInst :: ValueRef -> Bool
 
 -- | Obtain the type of a value.
 foreign import ccall unsafe "LLVMTypeOf"
-  typeOf :: ValueRef -> IO TypeRef
+  typeOf :: ValueRef -> TypeRef
 
 -- | Obtain the string name of a value.
 foreign import ccall unsafe "LLVMGetValueName"
@@ -2037,14 +2037,14 @@ foreign import ccall unsafe "LLVMReplaceAllUsesWith"
 
 -- | Determine whether the specified constant instance is constant.
 foreign import ccall unsafe "LLVMIsConstant"
-  isConstant :: ValueRef -> IO CInt
+  isConstant :: ValueRef -> CInt
 
 -- | Determine whether a value instance is undefined.
 foreign import ccall unsafe "LLVMIsUndef"
-  isUndef :: ValueRef -> IO CInt
+  isUndef :: ValueRef -> CInt
 
 foreign import ccall unsafe "LLVMIsNull"
-  isNull :: ValueRef -> IO CInt
+  isNull :: ValueRef -> CInt
 
 -- ** Uses
 -- | Obtain the first use of a value.
@@ -2101,7 +2101,7 @@ foreign import ccall unsafe "LLVMGetUndef"
 -- | Obtain a constant that is a constant pointer pointing to NULL for
 -- a specified type.
 foreign import ccall unsafe "LLVMConstPointerNull"
-  constPointerNull :: TypeRef -> IO ValueRef
+  constPointerNull :: TypeRef -> ValueRef
 
 -- ** Scalar Constants
 
@@ -2188,11 +2188,11 @@ foreign import ccall unsafe "LLVMConstRealOfStringAndSize"
 
 -- | Obtain the zero extended value for an integer constant value.
 foreign import ccall unsafe "LLVMConstIntGetZExtValue"
-  constIntGetZExtValue :: ValueRef -> IO CULLong
+  constIntGetZExtValue :: ValueRef -> CULLong
 
 -- | Obtain the sign extended value for an integer constant value.
 foreign import ccall unsafe "LLVMConstIntGetSExtValue"
-  constIntGetSExtValue :: ValueRef -> IO CLLong
+  constIntGetSExtValue :: ValueRef -> CLLong
 
 -- ** Composite Constants
 
@@ -2283,22 +2283,22 @@ foreign import ccall unsafe "LLVMConstVector"
 
 -- ** Constant expressions
 foreign import ccall unsafe "LLVMGetConstOpcode"
-  getConstOpcode :: ValueRef -> IO COpcode
+  getConstOpcode :: ValueRef -> COpcode
 
 foreign import ccall unsafe "LLVMAlignOf"
-  alignOf :: TypeRef -> IO ValueRef
+  alignOf :: TypeRef -> ValueRef
 
 foreign import ccall unsafe "LLVMSizeOf"
-  sizeOf :: TypeRef -> IO ValueRef
+  sizeOf :: TypeRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstNeg"
   constNeg :: ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstNSWNeg"
-  constNSWNeg :: ValueRef -> IO ValueRef
+  constNSWNeg :: ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstNUWNeg"
-  constNUWNeg :: ValueRef -> IO ValueRef
+  constNUWNeg :: ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstFNeg"
   constFNeg :: ValueRef -> ValueRef
@@ -2310,10 +2310,10 @@ foreign import ccall unsafe "LLVMConstAdd"
   constAdd :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstNSWAdd"
-  constNSWAdd :: ValueRef -> ValueRef -> IO ValueRef
+  constNSWAdd :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstNUWAdd"
-  constNUWAdd :: ValueRef -> ValueRef -> IO ValueRef
+  constNUWAdd :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstFAdd"
   constFAdd :: ValueRef -> ValueRef -> ValueRef
@@ -2322,10 +2322,10 @@ foreign import ccall unsafe "LLVMConstSub"
   constSub :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstNSWSub"
-  constNSWSub :: ValueRef -> ValueRef -> IO ValueRef
+  constNSWSub :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstNUWSub"
-  constNUWSub :: ValueRef -> ValueRef -> IO ValueRef
+  constNUWSub :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstFSub"
   constFSub :: ValueRef -> ValueRef -> ValueRef
@@ -2334,10 +2334,10 @@ foreign import ccall unsafe "LLVMConstMul"
   constMul :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstNSWMul"
-  constNSWMul :: ValueRef -> ValueRef -> IO ValueRef
+  constNSWMul :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstNUWMul"
-  constNUWMul :: ValueRef -> ValueRef -> IO ValueRef
+  constNUWMul :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstFMul"
   constFMul :: ValueRef -> ValueRef -> ValueRef
@@ -2349,7 +2349,7 @@ foreign import ccall unsafe "LLVMConstSDiv"
   constSDiv :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstExactSDiv"
-  constExactSDiv :: ValueRef -> ValueRef -> IO ValueRef
+  constExactSDiv :: ValueRef -> ValueRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstFDiv"
   constFDiv :: ValueRef -> ValueRef -> ValueRef
@@ -2404,7 +2404,7 @@ foreign import ccall unsafe "LLVMConstInBoundsGEP"
                    -- ^ Array of indexes
                    -> CUInt
                    -- ^ Number of indexes
-                   -> IO ValueRef
+                   -> ValueRef
                    -- ^ Constant value
 
 foreign import ccall unsafe "LLVMConstTrunc"
@@ -2444,16 +2444,16 @@ foreign import ccall unsafe "LLVMConstBitCast"
   constBitCast :: ValueRef -> TypeRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstSExtOrBitCast"
-  constSExtOrBitCast :: ValueRef -> TypeRef -> IO ValueRef
+  constSExtOrBitCast :: ValueRef -> TypeRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstZExtOrBitCast"
-  constZExtOrBitCast :: ValueRef -> TypeRef -> IO ValueRef
+  constZExtOrBitCast :: ValueRef -> TypeRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstTruncOrBitCast"
-  constTruncOrBitCast :: ValueRef -> TypeRef -> IO ValueRef
+  constTruncOrBitCast :: ValueRef -> TypeRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstPointerCast"
-  constPointerCast :: ValueRef -> TypeRef -> IO ValueRef
+  constPointerCast :: ValueRef -> TypeRef -> ValueRef
 
 foreign import ccall unsafe "LLVMConstIntCast"
   constIntCast :: ValueRef
@@ -2462,7 +2462,7 @@ foreign import ccall unsafe "LLVMConstIntCast"
                -- ^ Result type, must be an integer
                -> CInt
                -- ^ Boolean indicating whether the value is signed
-               -> IO ValueRef
+               -> ValueRef
                -- ^ Constant value
 
 foreign import ccall unsafe "LLVMConstFPCast"
@@ -2544,7 +2544,7 @@ foreign import ccall unsafe "LLVMConstInlineAsm"
                  -- ^ Constant value
 
 foreign import ccall unsafe "LLVMBlockAddress"
-  blockAddress :: ValueRef -> BasicBlockRef -> IO ValueRef
+  blockAddress :: ValueRef -> BasicBlockRef -> ValueRef
 
 -- * Operations on globals
 
