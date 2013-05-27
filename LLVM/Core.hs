@@ -1234,8 +1234,8 @@ vectorType ty = FFI.vectorType ty . fromIntegral
 -- | Obtain the number of elements in a vector type.
 --
 -- This only works on types that represent vectors.
-getVectorSize :: Num n => TypeRef -> IO n
-getVectorSize arr = FFI.getVectorSize arr >>= return . fromIntegral
+getVectorSize :: Num n => TypeRef -> n
+getVectorSize = fromIntegral . FFI.getVectorSize
 
 -- ** Other types
 
@@ -1262,215 +1262,215 @@ x86MMXType = FFI.x86MMXType
 
 -- * Values
 
-isAArgument :: ValueRef -> IO Bool
+isAArgument :: ValueRef -> Bool
 isAArgument = FFI.isAArgument
 
-isABasicBlock :: ValueRef -> IO Bool
+isABasicBlock :: ValueRef -> Bool
 isABasicBlock = FFI.isABasicBlock
 
-isAInlineAsm :: ValueRef -> IO Bool
+isAInlineAsm :: ValueRef -> Bool
 isAInlineAsm = FFI.isAInlineAsm
 
-isAMDNode :: ValueRef -> IO Bool
+isAMDNode :: ValueRef -> Bool
 isAMDNode = FFI.isAMDNode
 
-isAMDString :: ValueRef -> IO Bool
+isAMDString :: ValueRef -> Bool
 isAMDString = FFI.isAMDString
 
-isAUser :: ValueRef -> IO Bool
+isAUser :: ValueRef -> Bool
 isAUser = FFI.isAUser
 
-isAConstant :: ValueRef -> IO Bool
+isAConstant :: ValueRef -> Bool
 isAConstant = FFI.isAConstant
 
-isABlockAddress :: ValueRef -> IO Bool
+isABlockAddress :: ValueRef -> Bool
 isABlockAddress = FFI.isABlockAddress
 
-isAConstantAggregateZero :: ValueRef -> IO Bool
+isAConstantAggregateZero :: ValueRef -> Bool
 isAConstantAggregateZero = FFI.isAConstantAggregateZero
 
-isAConstantArray :: ValueRef -> IO Bool
+isAConstantArray :: ValueRef -> Bool
 isAConstantArray = FFI.isAConstantArray
 
-isAConstantExpr :: ValueRef -> IO Bool
+isAConstantExpr :: ValueRef -> Bool
 isAConstantExpr = FFI.isAConstantExpr
 
-isAConstantFP :: ValueRef -> IO Bool
+isAConstantFP :: ValueRef -> Bool
 isAConstantFP = FFI.isAConstantFP
 
-isAConstantInt :: ValueRef -> IO Bool
+isAConstantInt :: ValueRef -> Bool
 isAConstantInt = FFI.isAConstantInt
 
-isAConstantPointerNull :: ValueRef -> IO Bool
+isAConstantPointerNull :: ValueRef -> Bool
 isAConstantPointerNull = FFI.isAConstantPointerNull
 
-isAConstantStruct :: ValueRef -> IO Bool
+isAConstantStruct :: ValueRef -> Bool
 isAConstantStruct = FFI.isAConstantStruct
 
-isAConstantVector :: ValueRef -> IO Bool
+isAConstantVector :: ValueRef -> Bool
 isAConstantVector = FFI.isAConstantVector
 
-isAGlobalValue :: ValueRef -> IO Bool
+isAGlobalValue :: ValueRef -> Bool
 isAGlobalValue = FFI.isAGlobalValue
 
-isAFunction :: ValueRef -> IO Bool
+isAFunction :: ValueRef -> Bool
 isAFunction = FFI.isAFunction
 
-isAGlobalAlias :: ValueRef -> IO Bool
+isAGlobalAlias :: ValueRef -> Bool
 isAGlobalAlias = FFI.isAGlobalAlias
 
-isAGlobalVariable :: ValueRef -> IO Bool
+isAGlobalVariable :: ValueRef -> Bool
 isAGlobalVariable = FFI.isAGlobalVariable
 
-isAUndefValue :: ValueRef -> IO Bool
+isAUndefValue :: ValueRef -> Bool
 isAUndefValue = FFI.isAUndefValue
 
-isAInstruction :: ValueRef -> IO Bool
+isAInstruction :: ValueRef -> Bool
 isAInstruction = FFI.isAInstruction
 
-isABinaryOperator :: ValueRef -> IO Bool
+isABinaryOperator :: ValueRef -> Bool
 isABinaryOperator = FFI.isABinaryOperator
 
-isACallInst :: ValueRef -> IO Bool
+isACallInst :: ValueRef -> Bool
 isACallInst = FFI.isACallInst
 
-isAIntrinsicInst :: ValueRef -> IO Bool
+isAIntrinsicInst :: ValueRef -> Bool
 isAIntrinsicInst = FFI.isAIntrinsicInst
 
-isADbgInfoIntrinsic :: ValueRef -> IO Bool
+isADbgInfoIntrinsic :: ValueRef -> Bool
 isADbgInfoIntrinsic = FFI.isADbgInfoIntrinsic
 
-isADbgDeclareInst :: ValueRef -> IO Bool
+isADbgDeclareInst :: ValueRef -> Bool
 isADbgDeclareInst = FFI.isADbgDeclareInst
 
-isAMemIntrinsic :: ValueRef -> IO Bool
+isAMemIntrinsic :: ValueRef -> Bool
 isAMemIntrinsic = FFI.isAMemIntrinsic
 
-isAMemCpyInst :: ValueRef -> IO Bool
+isAMemCpyInst :: ValueRef -> Bool
 isAMemCpyInst = FFI.isAMemCpyInst
 
-isAMemMoveInst :: ValueRef -> IO Bool
+isAMemMoveInst :: ValueRef -> Bool
 isAMemMoveInst = FFI.isAMemMoveInst
 
-isAMemSetInst :: ValueRef -> IO Bool
+isAMemSetInst :: ValueRef -> Bool
 isAMemSetInst = FFI.isAMemSetInst
 
-isACmpInst :: ValueRef -> IO Bool
+isACmpInst :: ValueRef -> Bool
 isACmpInst = FFI.isACmpInst
 
-isAFCmpInst :: ValueRef -> IO Bool
+isAFCmpInst :: ValueRef -> Bool
 isAFCmpInst = FFI.isAFCmpInst
 
-isAICmpInst :: ValueRef -> IO Bool
+isAICmpInst :: ValueRef -> Bool
 isAICmpInst = FFI.isAICmpInst
 
-isAExtractElementInst :: ValueRef -> IO Bool
+isAExtractElementInst :: ValueRef -> Bool
 isAExtractElementInst = FFI.isAExtractElementInst
 
-isAGetElementPtrInst :: ValueRef -> IO Bool
+isAGetElementPtrInst :: ValueRef -> Bool
 isAGetElementPtrInst = FFI.isAGetElementPtrInst
 
-isAInsertElementInst :: ValueRef -> IO Bool
+isAInsertElementInst :: ValueRef -> Bool
 isAInsertElementInst = FFI.isAInsertElementInst
 
-isAInsertValueInst :: ValueRef -> IO Bool
+isAInsertValueInst :: ValueRef -> Bool
 isAInsertValueInst = FFI.isAInsertValueInst
 
-isALandingPadInst :: ValueRef -> IO Bool
+isALandingPadInst :: ValueRef -> Bool
 isALandingPadInst = FFI.isALandingPadInst
 
-isAPHINode :: ValueRef -> IO Bool
+isAPHINode :: ValueRef -> Bool
 isAPHINode = FFI.isAPHINode
 
-isASelectInst :: ValueRef -> IO Bool
+isASelectInst :: ValueRef -> Bool
 isASelectInst = FFI.isASelectInst
 
-isAShuffleVectorInst :: ValueRef -> IO Bool
+isAShuffleVectorInst :: ValueRef -> Bool
 isAShuffleVectorInst = FFI.isAShuffleVectorInst
 
-isAStoreInst :: ValueRef -> IO Bool
+isAStoreInst :: ValueRef -> Bool
 isAStoreInst = FFI.isAStoreInst
 
-isATerminatorInst :: ValueRef -> IO Bool
+isATerminatorInst :: ValueRef -> Bool
 isATerminatorInst = FFI.isATerminatorInst
 
-isABranchInst :: ValueRef -> IO Bool
+isABranchInst :: ValueRef -> Bool
 isABranchInst = FFI.isABranchInst
 
-isAIndirectBrInst :: ValueRef -> IO Bool
+isAIndirectBrInst :: ValueRef -> Bool
 isAIndirectBrInst = FFI.isAIndirectBrInst
 
-isAInvokeInst :: ValueRef -> IO Bool
+isAInvokeInst :: ValueRef -> Bool
 isAInvokeInst = FFI.isAInvokeInst
 
-isAReturnInst :: ValueRef -> IO Bool
+isAReturnInst :: ValueRef -> Bool
 isAReturnInst = FFI.isAReturnInst
 
-isASwitchInst :: ValueRef -> IO Bool
+isASwitchInst :: ValueRef -> Bool
 isASwitchInst = FFI.isASwitchInst
 
-isAUnreachableInst :: ValueRef -> IO Bool
+isAUnreachableInst :: ValueRef -> Bool
 isAUnreachableInst = FFI.isAUnreachableInst
 
-isAResumeInst :: ValueRef -> IO Bool
+isAResumeInst :: ValueRef -> Bool
 isAResumeInst = FFI.isAResumeInst
 
-isAUnaryInstruction :: ValueRef -> IO Bool
+isAUnaryInstruction :: ValueRef -> Bool
 isAUnaryInstruction = FFI.isAUnaryInstruction
 
-isAAllocaInst :: ValueRef -> IO Bool
+isAAllocaInst :: ValueRef -> Bool
 isAAllocaInst = FFI.isAAllocaInst
 
-isACastInst :: ValueRef -> IO Bool
+isACastInst :: ValueRef -> Bool
 isACastInst = FFI.isACastInst
 
-isABitCastInst :: ValueRef -> IO Bool
+isABitCastInst :: ValueRef -> Bool
 isABitCastInst = FFI.isABitCastInst
 
-isAFPExtInst :: ValueRef -> IO Bool
+isAFPExtInst :: ValueRef -> Bool
 isAFPExtInst = FFI.isAFPExtInst
 
-isAFPToSIInst :: ValueRef -> IO Bool
+isAFPToSIInst :: ValueRef -> Bool
 isAFPToSIInst = FFI.isAFPToSIInst
 
-isAFPToUIInst :: ValueRef -> IO Bool
+isAFPToUIInst :: ValueRef -> Bool
 isAFPToUIInst = FFI.isAFPToUIInst
 
-isAFPTruncInst :: ValueRef -> IO Bool
+isAFPTruncInst :: ValueRef -> Bool
 isAFPTruncInst = FFI.isAFPTruncInst
 
-isAIntToPtrInst :: ValueRef -> IO Bool
+isAIntToPtrInst :: ValueRef -> Bool
 isAIntToPtrInst = FFI.isAIntToPtrInst
 
-isAPtrToIntInst :: ValueRef -> IO Bool
+isAPtrToIntInst :: ValueRef -> Bool
 isAPtrToIntInst = FFI.isAPtrToIntInst
 
-isASExtInst :: ValueRef -> IO Bool
+isASExtInst :: ValueRef -> Bool
 isASExtInst = FFI.isASExtInst
 
-isASIToFPInst :: ValueRef -> IO Bool
+isASIToFPInst :: ValueRef -> Bool
 isASIToFPInst = FFI.isASIToFPInst
 
-isATruncInst :: ValueRef -> IO Bool
+isATruncInst :: ValueRef -> Bool
 isATruncInst = FFI.isATruncInst
 
-isAUIToFPInst :: ValueRef -> IO Bool
+isAUIToFPInst :: ValueRef -> Bool
 isAUIToFPInst = FFI.isAUIToFPInst
 
-isAZExtInst :: ValueRef -> IO Bool
+isAZExtInst :: ValueRef -> Bool
 isAZExtInst = FFI.isAZExtInst
 
-isAExtractValueInst :: ValueRef -> IO Bool
+isAExtractValueInst :: ValueRef -> Bool
 isAExtractValueInst = FFI.isAExtractValueInst
 
-isALoadInst :: ValueRef -> IO Bool
+isALoadInst :: ValueRef -> Bool
 isALoadInst = FFI.isALoadInst
 
-isAVAArgInst :: ValueRef -> IO Bool
+isAVAArgInst :: ValueRef -> Bool
 isAVAArgInst = FFI.isAVAArgInst
 
 -- | Obtain the type of a value.
-typeOf :: ValueRef -> IO TypeRef
+typeOf :: ValueRef -> TypeRef
 typeOf = FFI.typeOf
 
 -- | Obtain the string name of a value.
@@ -1494,15 +1494,15 @@ replaceAllUsesWith :: ValueRef
 replaceAllUsesWith = FFI.replaceAllUsesWith
 
 -- | Determine whether the specified constant instance is constant.
-isConstant :: ValueRef -> IO Bool
-isConstant val = FFI.isConstant val >>= return . toBool
+isConstant :: ValueRef -> Bool
+isConstant = toBool . FFI.isConstant
 
 -- | Determine whether a value instance is undefined.
-isUndef :: ValueRef -> IO Bool
-isUndef val = FFI.isUndef val >>= return . toBool
+isUndef :: ValueRef -> Bool
+isUndef = toBool . FFI.isUndef
 
-isNull :: ValueRef -> IO Bool
-isNull val = FFI.isNull val >>= return . toBool
+isNull :: ValueRef -> Bool
+isNull = toBool . FFI.isNull
 
 -- ** Uses
 
@@ -1559,7 +1559,7 @@ getUndef = FFI.getUndef
 
 -- | Obtain a constant that is a constant pointer pointing to NULL for
 -- a specified type.
-constPointerNull :: TypeRef -> IO ValueRef
+constPointerNull :: TypeRef -> ValueRef
 constPointerNull = FFI.constPointerNull
 
 -- ** Scalar Constants
@@ -1626,14 +1626,12 @@ constRealOfString ty str =
     (\(cstr, len) -> FFI.constRealOfStringAndSize ty cstr (fromIntegral len))
 
 -- | Obtain the zero extended value for an integer constant value.
-constIntGetZExtValue :: Integral n => ValueRef -> IO n
-constIntGetZExtValue val =
-  FFI.constIntGetZExtValue val >>= return . fromIntegral
+constIntGetZExtValue :: Integral n => ValueRef -> n
+constIntGetZExtValue = fromIntegral . FFI.constIntGetZExtValue
 
 -- | Obtain the sign extended value for an integer constant value.
-constIntGetSExtValue :: Integral n => ValueRef -> IO n
-constIntGetSExtValue val =
-  FFI.constIntGetSExtValue val >>= return . fromIntegral
+constIntGetSExtValue :: Integral n => ValueRef -> n
+constIntGetSExtValue = fromIntegral . FFI.constIntGetSExtValue
 
 -- ** Composite Constants
 
@@ -1726,22 +1724,22 @@ constVector vals =
 
 -- ** Constant Expressions
 
-getConstOpcode :: ValueRef -> IO Opcode
-getConstOpcode val = FFI.getConstOpcode val >>= return . FFI.toOpcode
+getConstOpcode :: ValueRef -> Opcode
+getConstOpcode = FFI.toOpcode. FFI.getConstOpcode
 
-alignOf :: TypeRef -> IO ValueRef
+alignOf :: TypeRef -> ValueRef
 alignOf = FFI.alignOf
 
-sizeOf :: TypeRef -> IO ValueRef
+sizeOf :: TypeRef -> ValueRef
 sizeOf = FFI.sizeOf
 
 constNeg :: ValueRef -> ValueRef
 constNeg = FFI.constNeg
 
-constNSWNeg :: ValueRef -> IO ValueRef
+constNSWNeg :: ValueRef -> ValueRef
 constNSWNeg = FFI.constNSWNeg
 
-constNUWNeg :: ValueRef -> IO ValueRef
+constNUWNeg :: ValueRef -> ValueRef
 constNUWNeg = FFI.constNUWNeg
 
 constFNeg :: ValueRef -> ValueRef
@@ -1753,10 +1751,10 @@ constNot = FFI.constNot
 constAdd :: ValueRef -> ValueRef -> ValueRef
 constAdd = FFI.constAdd
 
-constNSWAdd :: ValueRef -> ValueRef -> IO ValueRef
+constNSWAdd :: ValueRef -> ValueRef -> ValueRef
 constNSWAdd = FFI.constNSWAdd
 
-constNUWAdd :: ValueRef -> ValueRef -> IO ValueRef
+constNUWAdd :: ValueRef -> ValueRef -> ValueRef
 constNUWAdd = FFI.constNUWAdd
 
 constFAdd :: ValueRef -> ValueRef -> ValueRef
@@ -1765,10 +1763,10 @@ constFAdd = FFI.constFAdd
 constSub :: ValueRef -> ValueRef -> ValueRef
 constSub = FFI.constSub
 
-constNSWSub :: ValueRef -> ValueRef -> IO ValueRef
+constNSWSub :: ValueRef -> ValueRef -> ValueRef
 constNSWSub = FFI.constNSWSub
 
-constNUWSub :: ValueRef -> ValueRef -> IO ValueRef
+constNUWSub :: ValueRef -> ValueRef -> ValueRef
 constNUWSub = FFI.constNUWSub
 
 constFSub :: ValueRef -> ValueRef -> ValueRef
@@ -1777,10 +1775,10 @@ constFSub = FFI.constFSub
 constMul :: ValueRef -> ValueRef -> ValueRef
 constMul = FFI.constMul
 
-constNSWMul :: ValueRef -> ValueRef -> IO ValueRef
+constNSWMul :: ValueRef -> ValueRef -> ValueRef
 constNSWMul = FFI.constNSWMul
 
-constNUWMul :: ValueRef -> ValueRef -> IO ValueRef
+constNUWMul :: ValueRef -> ValueRef -> ValueRef
 constNUWMul = FFI.constNUWMul
 
 constFMul :: ValueRef -> ValueRef -> ValueRef
@@ -1792,7 +1790,7 @@ constUDiv = FFI.constUDiv
 constSDiv :: ValueRef -> ValueRef -> ValueRef
 constSDiv = FFI.constSDiv
 
-constExactSDiv :: ValueRef -> ValueRef -> IO ValueRef
+constExactSDiv :: ValueRef -> ValueRef -> ValueRef
 constExactSDiv = FFI.constExactSDiv
 
 constFDiv :: ValueRef -> ValueRef -> ValueRef
@@ -1835,12 +1833,11 @@ constGEP :: ValueRef
          -- ^ Pointer value
          -> [ValueRef]
          -- ^ Indexes
-         -> ValueRef
+         -> IO ValueRef
          -- ^ Constant value
 constGEP val offs =
-  unsafePerformIO
-    (withArrayLen offs
-      (\len arr -> return (FFI.constGEP val arr (fromIntegral len))))
+  withArrayLen offs
+    (\len arr -> FFI.constGEP val arr (fromIntegral len))
 
 constInBoundsGEP :: ValueRef
                  -- ^ Pointer value
@@ -1888,16 +1885,16 @@ constIntToPtr = FFI.constIntToPtr
 constBitCast :: ValueRef -> TypeRef -> ValueRef
 constBitCast = FFI.constBitCast
 
-constSExtOrBitCast :: ValueRef -> TypeRef -> IO ValueRef
+constSExtOrBitCast :: ValueRef -> TypeRef -> ValueRef
 constSExtOrBitCast = FFI.constSExtOrBitCast
 
-constZExtOrBitCast :: ValueRef -> TypeRef -> IO ValueRef
+constZExtOrBitCast :: ValueRef -> TypeRef -> ValueRef
 constZExtOrBitCast = FFI.constZExtOrBitCast
 
-constTruncOrBitCast :: ValueRef -> TypeRef -> IO ValueRef
+constTruncOrBitCast :: ValueRef -> TypeRef -> ValueRef
 constTruncOrBitCast = FFI.constTruncOrBitCast
 
-constPointerCast :: ValueRef -> TypeRef -> IO ValueRef
+constPointerCast :: ValueRef -> TypeRef -> ValueRef
 constPointerCast = FFI.constPointerCast
 
 constIntCast :: ValueRef
@@ -1906,7 +1903,7 @@ constIntCast :: ValueRef
              -- ^ Result type, must be an integer
              -> Bool
              -- ^ Boolean indicating whether the value is signed
-             -> IO ValueRef
+             -> ValueRef
              -- ^ Constant value
 constIntCast val ty = FFI.constIntCast val ty . fromBool
 
@@ -1990,7 +1987,7 @@ constInlineAsm ty asm const effects align =
       (\cconst ->
         FFI.constInlineAsm ty casm cconst (fromBool effects) (fromBool align)))
 
-blockAddress :: ValueRef -> BasicBlockRef -> IO ValueRef
+blockAddress :: ValueRef -> BasicBlockRef -> ValueRef
 blockAddress = FFI.blockAddress
 
 -- * Operations on globals
@@ -2031,7 +2028,8 @@ addGlobal :: ModuleRef -> TypeRef -> String -> IO ValueRef
 addGlobal mod ty str =
   withCString str (FFI.addGlobal mod ty)
 
-addGlobalInAddressSpace :: Integral n => ModuleRef
+addGlobalInAddressSpace :: Integral n
+                        => ModuleRef
                         -- ^ Module
                         -> TypeRef
                         -- ^ Type
