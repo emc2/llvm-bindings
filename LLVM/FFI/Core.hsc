@@ -2394,7 +2394,7 @@ foreign import ccall unsafe "LLVMConstGEP"
            -- ^ Array of indexes
            -> CUInt
            -- ^ Number of indexes
-           -> ValueRef
+           -> IO ValueRef
            -- ^ Constant value
 
 foreign import ccall unsafe "LLVMConstInBoundsGEP"
@@ -2404,7 +2404,7 @@ foreign import ccall unsafe "LLVMConstInBoundsGEP"
                    -- ^ Array of indexes
                    -> CUInt
                    -- ^ Number of indexes
-                   -> ValueRef
+                   -> IO ValueRef
                    -- ^ Constant value
 
 foreign import ccall unsafe "LLVMConstTrunc"
