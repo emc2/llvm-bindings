@@ -34,10 +34,18 @@
 module Control.Monad.LLVM.LLVMContext(
        MonadLLVMContext(..),
        LLVMContextT,
-       LLVMContext
+       LLVMContext,
+       runWithContext,
+       runWithNewContext,
+       runWithGlobalContext
        ) where
 
+import Control.Applicative
+import Control.Monad.Cont.Class
+import Control.Monad.Error.Class
 import Control.Monad.LLVM.LLVMContext.Class
+import Control.Monad.LLVM.LLVMModule.Class
+import Control.Monad.Writer.Class
 import Control.Monad.Reader
 import Control.Monad.State
 
@@ -46,6 +54,26 @@ import qualified LLVM.Core as LLVM
 newtype LLVMContextT m a =
   LLVMContextT { unpackLLVMContextT :: ReaderT LLVM.ContextRef m a }
 type LLVMContext a = LLVMContextT IO a
+
+-- | Run an LLVMContextT with a given context
+runWithContext :: MonadIO m => LLVMContextT m a -> LLVM.ContextRef -> m a
+runWithContext m = runReaderT (unpackLLVMContextT m)
+
+-- | Create a fresh context and use it to run an LLVMContextT.  The
+-- created context is disposed after running the LLVMContextT, so the
+-- result must not depend on its continued existence.
+runWithNewContext :: MonadIO m => LLVMContextT m a -> m a
+runWithNewContext m =
+  do
+    ctx <- liftIO LLVM.contextCreate
+    res <- runReaderT (unpackLLVMContextT m) ctx
+    liftIO (LLVM.contextDispose ctx)
+    return res
+
+-- | Get the global context and use it to run an LLVMContextT
+runWithGlobalContext :: MonadIO m => LLVMContextT m a -> m a
+runWithGlobalContext m =
+  liftIO LLVM.getGlobalContext >>= runReaderT (unpackLLVMContextT m)
 
 getMDKindIDInContext' :: (MonadIO m, Num n) =>
                          String -> (ReaderT LLVM.ContextRef m) n
@@ -207,3 +235,60 @@ instance MonadTrans LLVMContextT where
 instance MonadState s m => MonadState s (LLVMContextT m) where
   get = lift get
   put = lift . put
+
+instance MonadLLVMModule m => MonadLLVMModule (LLVMContextT m) where
+  getDataLayout = lift getDataLayout
+  setDataLayout = lift . setDataLayout
+  getTarget = lift getTarget
+  setTarget = lift . setTarget
+  dumpModule = lift dumpModule
+  getTypeByName = lift . getTypeByName
+  getNamedMetadataNumOperands = lift . getNamedMetadataNumOperands
+  getNamedMetadataOperands = lift . getNamedMetadataOperands
+  addNamedMetadataOperand name = lift . addNamedMetadataOperand name
+  addFunction name = lift . addFunction name
+  getNamedFunction = lift . getNamedFunction
+  getFirstFunction = lift getFirstFunction
+  getLastFunction = lift getLastFunction
+  getModuleContext = lift getModuleContext
+  setModuleInlineAsm = lift . setModuleInlineAsm
+  addGlobal name = lift . addGlobal name
+  addGlobalInAddressSpace name ty = lift . addGlobalInAddressSpace name ty
+  getNamedGlobal = lift . getNamedGlobal
+  getFirstGlobal = lift getFirstGlobal
+  getLastGlobal = lift getLastGlobal
+  addAlias ty val = lift . addAlias ty val
+
+instance (Functor m) => Functor (LLVMContextT m) where
+  fmap f  = LLVMContextT . mapReaderT (fmap f) . unpackLLVMContextT
+
+instance (Applicative m) => Applicative (LLVMContextT m) where
+  pure = LLVMContextT . pure
+  f <*> v = LLVMContextT $ unpackLLVMContextT f <*> unpackLLVMContextT v
+
+instance Alternative m => Alternative (LLVMContextT m) where
+  empty = LLVMContextT empty
+  m <|> n = LLVMContextT $ unpackLLVMContextT m <|> unpackLLVMContextT n
+
+instance MonadPlus m => MonadPlus (LLVMContextT m) where
+  mzero = lift mzero
+  m `mplus` n = LLVMContextT $ unpackLLVMContextT m `mplus` unpackLLVMContextT n
+
+instance MonadFix m => MonadFix (LLVMContextT m) where
+  mfix f = LLVMContextT $ mfix $ (\a -> unpackLLVMContextT (f a))
+
+instance MonadCont m => MonadCont (LLVMContextT m) where
+  callCC f =
+    LLVMContextT $ callCC $
+      (\c -> unpackLLVMContextT (f (\a -> LLVMContextT $ c a)))
+
+instance (MonadError e m) => MonadError e (LLVMContextT m) where
+  throwError = lift . throwError
+  m `catchError` h =
+    LLVMContextT $ unpackLLVMContextT m `catchError`
+                     (\e -> unpackLLVMContextT (h e))
+
+instance MonadWriter w m => MonadWriter w (LLVMContextT m) where
+  tell = lift . tell
+  listen m = LLVMContextT $ listen (unpackLLVMContextT m)
+  pass m = LLVMContextT $ pass (unpackLLVMContextT m)
