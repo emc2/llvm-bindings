@@ -41,6 +41,8 @@ library
   exposed-modules:
     Control.Monad.LLVM.LLVMContext
     Control.Monad.LLVM.LLVMContext.Class
+    Control.Monad.LLVM.LLVMModule
+    Control.Monad.LLVM.LLVMModule.Class
     LLVM.Analysis
     LLVM.BitReader
     LLVM.BitWriter
