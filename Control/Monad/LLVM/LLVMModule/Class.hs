@@ -137,3 +137,11 @@ class MonadIO m => MonadLLVMModule m where
            -- ^ Name
            -> m ValueRef
            -- ^ Alias value
+
+  -- | Verifies that a module is valid, taking the specified action if
+  -- not.  Optionally returns a human-readable description of any
+  -- invalid constructs.
+  verifyModule :: m (Bool, String)
+
+  -- | Write the module to the specified path.
+  writeBitcodeToFile :: String -> m Bool

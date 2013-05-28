@@ -37,7 +37,8 @@ module Control.Monad.LLVM.LLVMBuilder(
        LLVMBuilder,
        runWithBuilder,
        runWithNewBuilder,
-       runWithNewBuilderInContext) where
+       runWithNewBuilderInContext
+       ) where
 
 import Control.Applicative
 import Control.Monad.Cont.Class
@@ -919,6 +920,8 @@ instance MonadLLVMModule m => MonadLLVMModule (LLVMBuilderT m) where
   getFirstGlobal = lift getFirstGlobal
   getLastGlobal = lift getLastGlobal
   addAlias ty val = lift . addAlias ty val
+  verifyModule = lift verifyModule
+  writeBitcodeToFile = lift . writeBitcodeToFile
 
 instance (Functor m) => Functor (LLVMBuilderT m) where
   fmap f  = LLVMBuilderT . mapReaderT (fmap f) . unpackLLVMBuilderT

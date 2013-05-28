@@ -51,6 +51,8 @@ import Control.Monad.Reader
 import Control.Monad.State
 import Prelude hiding (mod)
 
+import qualified LLVM.Analysis as Analysis
+import qualified LLVM.BitWriter as BitWriter
 import qualified LLVM.Core as LLVM
 
 newtype LLVMModuleT m a =
@@ -196,6 +198,16 @@ addAlias' ty val name =
     mod <- ask
     liftIO (LLVM.addAlias mod ty val name)
 
+verifyModule' :: MonadIO m => (ReaderT LLVM.ModuleRef m) String
+verifyModule' = ask >>= liftIO . Analysis.verifyModule
+
+writeBitcodeToFile' :: MonadIO m => String ->
+                   (ReaderT LLVM.ModuleRef m) LLVM.ValueRef
+writeBitcodeToFile' name =
+  do
+    mod <- ask
+    liftIO (BitWriter.writeBitcodeToFile mod name)
+
 instance MonadIO m => MonadLLVMModule (LLVMModuleT m) where
   getDataLayout = LLVMModuleT getDataLayout'
   setDataLayout = LLVMModuleT . setDataLayout'
@@ -219,6 +231,8 @@ instance MonadIO m => MonadLLVMModule (LLVMModuleT m) where
   getFirstGlobal = LLVMModuleT getFirstGlobal'
   getLastGlobal = LLVMModuleT getLastGlobal'
   addAlias ty val = LLVMModuleT . addAlias' ty val
+  verifyModule = LLVMModuleT verifyModule'
+  writeBitcodeToFile = LLVMModuleT . writeBitcodeToFile'
 
 instance Monad m => Monad (LLVMModuleT m) where
   return = LLVMModuleT . return

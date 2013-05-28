@@ -259,6 +259,8 @@ instance MonadLLVMModule m => MonadLLVMModule (LLVMContextT m) where
   getFirstGlobal = lift getFirstGlobal
   getLastGlobal = lift getLastGlobal
   addAlias ty val = lift . addAlias ty val
+  verifyModule = lift verifyModule
+  writeBitcodeToFile = lift . writeBitcodeToFile
 
 instance MonadLLVMBuilder m => MonadLLVMBuilder (LLVMContextT m) where
   positionBuilder block = lift . positionBuilder block
