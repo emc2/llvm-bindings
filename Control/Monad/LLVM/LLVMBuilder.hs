@@ -897,6 +897,49 @@ instance MonadLLVMContext m => MonadLLVMContext (LLVMBuilderT m) where
   appendBasicBlockInContext block = lift . appendBasicBlockInContext block
   insertBasicBlockInContext block = lift . insertBasicBlockInContext block
   createBuilderInContext = lift createBuilderInContext
+  parseBitcodeInContext = lift . parseBitcodeInContext
+  getBitcodeModuleInContext = lift . getBitcodeModuleInContext
+  tbaaRootMetadataInContext = lift . tbaaRootMetadataInContext
+  tbaaMetadataInContext name parent = lift . tbaaMetadataInContext name parent
+  fpMathMetadataInContext = lift . fpMathMetadataInContext
+  loopMetadataInContext = lift loopMetadataInContext
+  compileUnitMetadataInContext lang file producer dir main opt flags
+                               vers enums types subprogs =
+    lift . compileUnitMetadataInContext lang file producer dir main opt
+                                        flags vers enums types subprogs
+  fileMetadataInContext name = lift . fileMetadataInContext name
+  globalVarMetadataInContext compunitmd name dispname linkname filemd
+                             lineno typemd islocal defined =
+    lift . globalVarMetadataInContext compunitmd name dispname linkname
+                                      filemd lineno typemd islocal defined
+  subprogramMetadataInContext compunitmd dispname linkname filemd lineno
+                              typemd islocal defined basetype flags optimized
+                              ref tempparams funcdecl funcvars =
+    lift . subprogramMetadataInContext compunitmd dispname linkname filemd
+                                       lineno typemd islocal defined basetype
+                                       flags optimized ref tempparams funcdecl
+                                       funcvars
+  blockMetadataInContext subprogrammd lineno colno filemd =
+    lift . blockMetadataInContext subprogrammd lineno colno filemd
+  basicTypeMetadataInContext compunitmd name filemd lineno size
+                             align offset flags =
+    lift . basicTypeMetadataInContext compunitmd name filemd lineno
+                                      size align offset flags
+  derivedTypeMetadataInContext tag compunitmd name filemd lineno
+                               size align offset flags =
+    lift . derivedTypeMetadataInContext tag compunitmd name filemd lineno
+                                        size align offset flags
+  compositeTypeMetadataInContext tag compunitmd name filemd lineno
+                               size align offset flags derivemd =
+    lift . compositeTypeMetadataInContext tag compunitmd name filemd lineno
+                                          size align offset flags derivemd
+  enumMetadataInContext name = lift . enumMetadataInContext name
+  localVarMetadataInContext blockmd name filemd lineno typemd =
+    lift . localVarMetadataInContext blockmd name filemd lineno typemd
+  argMetadataInContext blockmd name filemd lineno argno typemd =
+    lift . argMetadataInContext blockmd name filemd lineno argno typemd
+  locationMetadataInContext lineno colno =
+    lift . locationMetadataInContext lineno colno
 
 instance MonadLLVMModule m => MonadLLVMModule (LLVMBuilderT m) where
   getDataLayout = lift getDataLayout

@@ -47,10 +47,12 @@ import Control.Monad.LLVM.LLVMBuilder.Class
 import Control.Monad.LLVM.LLVMContext.Class
 import Control.Monad.LLVM.LLVMModule.Class
 import Control.Monad.Writer.Class
-import Control.Monad.Reader
+import Control.Monad.Reader(ReaderT, runReaderT, mapReaderT, ask)
 import Control.Monad.State
 
 import qualified LLVM.Core as LLVM
+import qualified LLVM.BitReader as BitReader
+import qualified LLVM.Metadata as Metadata
 
 newtype LLVMContextT m a =
   LLVMContextT { unpackLLVMContextT :: ReaderT LLVM.ContextRef m a }
@@ -194,6 +196,186 @@ createBuilderInContext' :: MonadIO m =>
                            (ReaderT LLVM.ContextRef m) LLVM.BuilderRef
 createBuilderInContext' = ask >>= liftIO . LLVM.createBuilderInContext
 
+parseBitcodeInContext' :: MonadIO m => LLVM.MemoryBufferRef ->
+                          (ReaderT LLVM.ContextRef m)
+                            (Either LLVM.ModuleRef String)
+parseBitcodeInContext' buf =
+  do
+    ctx <- ask
+    liftIO (BitReader.parseBitcodeInContext ctx buf)
+
+getBitcodeModuleInContext' :: MonadIO m => LLVM.MemoryBufferRef ->
+                              (ReaderT LLVM.ContextRef m)
+                                (Either LLVM.ModuleRef String)
+getBitcodeModuleInContext' buf =
+  do
+    ctx <- ask
+    liftIO (BitReader.getBitcodeModuleInContext ctx buf)
+
+tbaaRootMetadataInContext' :: (MonadIO m) => String ->
+                              (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+tbaaRootMetadataInContext' name =
+  do
+    ctx <- ask
+    liftIO (Metadata.tbaaRootMetadataInContext ctx name)
+
+tbaaMetadataInContext' :: (MonadIO m) => String -> LLVM.ValueRef -> Bool ->
+                          (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+tbaaMetadataInContext' name parent constant =
+  do
+    ctx <- ask
+    liftIO (Metadata.tbaaMetadataInContext ctx name parent constant)
+
+fpMathMetadataInContext' :: (MonadIO m, Real n) => n ->
+                            (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+fpMathMetadataInContext' accuracy =
+  do
+    ctx <- ask
+    liftIO (Metadata.fpMathMetadataInContext ctx accuracy)
+
+loopMetadataInContext' :: MonadIO m =>
+                          (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+loopMetadataInContext' = ask >>= liftIO . Metadata.loopMetadataInContext
+
+compileUnitMetadataInContext' :: (Integral n1, Integral n2, MonadIO m) =>
+                                 n1 -> String -> String -> String -> Bool ->
+                                 Bool -> String -> n2 -> [LLVM.ValueRef] ->
+                                 [LLVM.ValueRef] -> [LLVM.ValueRef] ->
+                                 [LLVM.ValueRef] ->
+                                 (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+compileUnitMetadataInContext' lang file producer dir main opt flags
+                              vers enums types subprogs gvars =
+  do
+    ctx <- ask
+    liftIO (Metadata.compileUnitMetadataInContext ctx lang file producer dir
+                                                  main opt flags vers enums
+                                                  types subprogs gvars)
+
+fileMetadataInContext' :: MonadIO m => String -> String ->
+                          (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+fileMetadataInContext' file dir =
+  do
+    ctx <- ask
+    liftIO (Metadata.fileMetadataInContext ctx file dir)
+
+globalVarMetadataInContext' :: (MonadIO m, Integral n) =>
+                               LLVM.ValueRef -> String -> String -> String ->
+                               LLVM.ValueRef -> n -> LLVM.ValueRef -> Bool ->
+                               Bool -> LLVM.ValueRef ->
+                               (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+globalVarMetadataInContext' compunitmd name dispname linkname filemd
+                            lineno typemd local defined ref =
+  do
+    ctx <- ask
+    liftIO (Metadata.globalVarMetadataInContext ctx compunitmd name dispname
+                                                linkname filemd lineno typemd
+                                                local defined ref)
+
+subprogramMetadataInContext' :: (MonadIO m, Integral n1,
+                                 Integral n2, Integral n3) =>
+                                LLVM.ValueRef -> String -> String ->
+                                LLVM.ValueRef -> n1 -> LLVM.ValueRef -> Bool ->
+                                Bool -> LLVM.ValueRef -> n2 -> Bool ->
+                                LLVM.ValueRef -> LLVM.ValueRef ->
+                                LLVM.ValueRef -> LLVM.ValueRef -> n3 ->
+                                (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+subprogramMetadataInContext' compunitmd dispname linkname filemd lineno typemd
+                             local defined basetype flags optimized ref
+                             tempparams funcdecl funcvars beginlineno =
+  do
+    ctx <- ask
+    liftIO (Metadata.subprogramMetadataInContext ctx compunitmd dispname        
+                                                 linkname filemd lineno
+                                                 typemd local defined basetype
+                                                 flags optimized ref tempparams
+                                                 funcdecl funcvars beginlineno)
+
+blockMetadataInContext' :: (MonadIO m, Integral n1, Integral n2, Integral n3) =>
+                           LLVM.ValueRef -> n1 -> n2 -> LLVM.ValueRef -> n3 ->
+                           (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+blockMetadataInContext' subprogrammd lineno colno filemd uid =
+  do
+    ctx <- ask
+    liftIO (Metadata.blockMetadataInContext ctx subprogrammd lineno
+                                            colno filemd uid)
+
+basicTypeMetadataInContext' :: (MonadIO m, Integral n1, Integral n2,
+                                Integral n3, Integral n4, Integral n5,
+                               Integral n6) => LLVM.ValueRef -> String ->
+                               LLVM.ValueRef -> n1 -> n2 -> n3 -> n4 -> n5 ->
+                               n6 -> (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+basicTypeMetadataInContext' compunitmd name filemd lineno size
+                            align offset flags encoding =
+  do
+    ctx <- ask
+    liftIO (Metadata.basicTypeMetadataInContext ctx compunitmd name filemd
+                                                lineno size align offset
+                                                flags encoding)
+
+derivedTypeMetadataInContext' :: (MonadIO m, Integral n1, Integral n2,
+                                  Integral n3, Integral n4, Integral n5,
+                                  Integral n6) => n1 -> LLVM.ValueRef ->
+                                 String -> LLVM.ValueRef -> n2 -> n3 -> n4 ->
+                                 n5 -> n6 -> LLVM.ValueRef ->
+                                 (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+derivedTypeMetadataInContext' tag compunitmd name filemd lineno
+                              size align offset flags derivemd =
+  do
+    ctx <- ask
+    liftIO (Metadata.derivedTypeMetadataInContext ctx tag compunitmd name
+                                                  filemd lineno size align
+                                                  offset flags derivemd)
+
+compositeTypeMetadataInContext' :: (MonadIO m, Integral n1, Integral n2,
+                                    Integral n3, Integral n4, Integral n5,
+                                    Integral n6) => n1 -> LLVM.ValueRef ->
+                                   String -> LLVM.ValueRef -> n2 -> n3 -> n4 ->
+                                   n5 -> n6 -> LLVM.ValueRef -> LLVM.ValueRef ->
+                                   (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+compositeTypeMetadataInContext' tag compunitmd name filemd lineno size align
+                                offset flags derivemd membersmd =
+  do
+    ctx <- ask
+    liftIO (Metadata.compositeTypeMetadataInContext ctx tag compunitmd name
+                                                    filemd lineno size align
+                                                    offset flags derivemd
+                                                    membersmd)
+
+enumMetadataInContext' :: (MonadIO m, Integral n) => String -> n ->
+                          (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+enumMetadataInContext' name value =
+  do
+    ctx <- ask
+    liftIO (Metadata.enumMetadataInContext ctx name value)
+
+localVarMetadataInContext' :: (MonadIO m, Integral n1, Integral n2) =>
+                              LLVM.ValueRef -> String -> LLVM.ValueRef -> n1 ->
+                              LLVM.ValueRef -> n2 ->
+                              (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+localVarMetadataInContext' blockmd name filemd lineno typemd flags =
+  do
+    ctx <- ask
+    liftIO (Metadata.localVarMetadataInContext ctx blockmd name filemd
+                                               lineno typemd flags)
+
+argMetadataInContext' :: (MonadIO m, Integral n1, Integral n2, Integral n3) =>
+                         LLVM.ValueRef -> String -> LLVM.ValueRef ->
+                         n1 -> n2 -> LLVM.ValueRef -> n3 ->
+                         (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+argMetadataInContext' blockmd name filemd lineno argno typemd flags =
+  do
+    ctx <- ask
+    liftIO (Metadata.argMetadataInContext ctx blockmd name filemd
+                                          lineno argno typemd flags)
+
+locationMetadataInContext' :: (MonadIO m, Integral n1, Integral n2) =>
+                              n1 -> n2 -> LLVM.ValueRef ->
+                              (ReaderT LLVM.ContextRef m) LLVM.ValueRef
+locationMetadataInContext' lineno colno blockmd =
+  do
+    ctx <- ask
+    liftIO (Metadata.locationMetadataInContext ctx lineno colno blockmd)
+
 instance MonadIO m => MonadLLVMContext (LLVMContextT m) where
   getMDKindIDInContext = LLVMContextT . getMDKindIDInContext'
   moduleCreateWithNameInContext = LLVMContextT . moduleCreateWithNameInContext'
@@ -222,6 +404,54 @@ instance MonadIO m => MonadLLVMContext (LLVMContextT m) where
   insertBasicBlockInContext block =
     LLVMContextT . insertBasicBlockInContext' block
   createBuilderInContext = LLVMContextT createBuilderInContext'
+  parseBitcodeInContext = LLVMContextT . parseBitcodeInContext'
+  getBitcodeModuleInContext = LLVMContextT . getBitcodeModuleInContext'
+  tbaaRootMetadataInContext = LLVMContextT . tbaaRootMetadataInContext'
+  tbaaMetadataInContext name parent =
+    LLVMContextT . tbaaMetadataInContext' name parent
+  fpMathMetadataInContext = LLVMContextT . fpMathMetadataInContext'
+  loopMetadataInContext = LLVMContextT loopMetadataInContext'
+  compileUnitMetadataInContext lang file producer dir main opt flags
+                               vers enums types subprogs =
+    LLVMContextT . compileUnitMetadataInContext' lang file producer dir main opt
+                                                 flags vers enums types subprogs
+  fileMetadataInContext name =
+    LLVMContextT . fileMetadataInContext' name
+  globalVarMetadataInContext compunitmd name dispname linkname filemd
+                             lineno typemd local defined =
+    LLVMContextT . globalVarMetadataInContext' compunitmd name dispname
+                                               linkname filemd lineno typemd
+                                               local defined
+  subprogramMetadataInContext compunitmd dispname linkname filemd lineno
+                              typemd local defined basetype flags optimized ref
+                              tempparams funcdecl funcvars =
+    LLVMContextT . subprogramMetadataInContext' compunitmd dispname linkname
+                                                filemd lineno typemd local
+                                                defined basetype flags optimized
+                                                ref tempparams funcdecl funcvars
+  blockMetadataInContext subprogrammd lineno colno filemd =
+    LLVMContextT . blockMetadataInContext' subprogrammd lineno colno filemd
+  basicTypeMetadataInContext compunitmd name filemd lineno size
+                             align offset flags =
+    LLVMContextT . basicTypeMetadataInContext' compunitmd name filemd lineno
+                                               size align offset flags
+  derivedTypeMetadataInContext tag compunitmd name filemd lineno
+                               size align offset flags =
+    LLVMContextT . derivedTypeMetadataInContext' tag compunitmd name filemd
+                                                 lineno size align offset flags
+  compositeTypeMetadataInContext tag compunitmd name filemd lineno
+                                 size align offset flags derivemd =
+    LLVMContextT . compositeTypeMetadataInContext' tag compunitmd name filemd
+                                                   lineno size align offset
+                                                   flags derivemd
+  enumMetadataInContext name =
+    LLVMContextT . enumMetadataInContext' name
+  localVarMetadataInContext blockmd name filemd lineno typemd =
+    LLVMContextT . localVarMetadataInContext' blockmd name filemd lineno typemd
+  argMetadataInContext blockmd name filemd lineno argno typemd =
+    LLVMContextT . argMetadataInContext' blockmd name filemd lineno argno typemd
+  locationMetadataInContext lineno colno =
+    LLVMContextT . locationMetadataInContext' lineno colno
 
 instance Monad m => Monad (LLVMContextT m) where
   return = LLVMContextT . return

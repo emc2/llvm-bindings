@@ -35,8 +35,8 @@ module Control.Monad.LLVM.LLVMContext.Class(
        ) where
 
 import Control.Monad.Trans
-import LLVM.Core(ModuleRef, ValueRef, TypeRef,
-                 BasicBlockRef, BuilderRef)
+import LLVM.Core(ModuleRef, ValueRef, TypeRef, BasicBlockRef,
+                 BuilderRef, MemoryBufferRef)
 
 -- | Class for monads that carry LLVM context information
 class MonadIO m => MonadLLVMContext m where
@@ -145,3 +145,306 @@ class MonadIO m => MonadLLVMContext m where
                             -- ^ The block.
 
   createBuilderInContext :: m BuilderRef
+
+  parseBitcodeInContext :: MemoryBufferRef -> m (Either ModuleRef String)
+  getBitcodeModuleInContext :: MemoryBufferRef -> m (Either ModuleRef String)
+
+  -- | Create metadata for a TBAA root node in a context.
+  tbaaRootMetadataInContext :: String
+                            -- ^ The name to give the root metadata.
+                            -> m ValueRef
+                            -- ^ The TBAA metadata node.
+
+  -- | Create metadata for a TBAA branch node in a context.
+  tbaaMetadataInContext :: String
+                        -- ^ The name of the type.
+                        -> ValueRef
+                        -- ^ The parent TBAA node.
+                        -> Bool
+                        -- ^ Whether or not the TBAA node represents a
+                        -- constant type.
+                        -> m ValueRef
+                        -- ^ The TBAA metadata node.
+
+  -- | Create metadata for FP math accuracy in a given context.
+  fpMathMetadataInContext :: Real n => n
+                          -- ^ The required accuracy.
+                          -> m ValueRef
+                          -- ^ The FP math metadata node.
+
+  -- | Create a loop identifier metadata node in the given context.
+  loopMetadataInContext :: m ValueRef
+
+  -- | Generate an LLVM metadata node containing debug info for a
+  -- compilation unit.
+  compileUnitMetadataInContext :: (Integral n1, Integral n2) => n1
+                               -- ^ Language ID.
+                               -> String
+                               -- ^ The file name.
+                               -> String
+                               -- ^ The directory name.
+                               -> String
+                               -- ^ The producer name.
+                               -> Bool
+                               -- ^ Whether or not this is a main compile unit.
+                               -> Bool
+                               -- ^ Whether or not this is optimized.
+                               -> String
+                               -- ^ The flags for this compile unit.
+                               -> n2
+                               -- ^ The runtime version.
+                               -> [ValueRef]
+                               -- ^ The list of descriptors for enum types.
+                               -> [ValueRef]
+                               -- ^ The list of descriptors for retained types.
+                               -> [ValueRef]
+                               -- ^ The list of descriptors for subprograms.
+                               -> [ValueRef]
+                               -- ^ The list of descriptors for global
+                               -- variables.
+                               -> m ValueRef
+                               -- ^ The LLVM Metadata for this file descriptor.
+
+  -- | Generate an LLVM metadata node containing a file name.
+  fileMetadataInContext :: String
+                        -- ^ The file name.
+                        -> String
+                        -- ^ The directory name.
+                        -> m ValueRef
+                        -- ^ The LLVM Metadata for this file descriptor.
+
+  -- | Generate an LLVM metadata node describing a global variable declaration.
+  globalVarMetadataInContext :: Integral n => ValueRef
+                             -- ^ The metadata node for the compilation unit.
+                             -> String
+                             -- ^ The variable's name.
+                             -> String
+                             -- ^ The display name.
+                             -> String
+                             -- ^ The linkage name.
+                             -> ValueRef
+                             -- ^ The metadata node for the file.
+                             -> n
+                             -- ^ The line number.
+                             -> ValueRef
+                             -- ^ The metadata node for the type.
+                             -> Bool
+                             -- ^ Whether or not this subprogram is
+                             -- local to the compilation unit
+                             -- (static).
+                             -> Bool
+                             -- ^ Whether or not this subprogram is
+                             -- defined in the compilation unit (not
+                             -- extern).
+                             -> ValueRef
+                             -- ^ A reference to the actual global
+                             -- variable itself.
+                             -> m ValueRef
+                             -- ^ The LLVM Metadata for this global variable.
+
+  -- | Generate an LLVM metadata node containing information about a
+  -- subprogram (ie a function).
+  subprogramMetadataInContext :: (Integral n1, Integral n2, Integral n3)
+                              => ValueRef
+                              -- ^ The metadata node for the compilation unit.
+                              -> String
+                              -- ^ The display name.
+                              -> String
+                              -- ^ The linkage name.
+                              -> ValueRef
+                              -- ^ The metadata node for the file.
+                              -> n1
+                              -- ^ The line number.
+                              -> ValueRef
+                              -- ^ The metadata node for the type.
+                              -> Bool
+                              -- ^ Whether or not this subprogram is
+                              -- local to the compilation unit (static).
+                              -> Bool
+                              -- ^ Whether or not this subprogram is
+                              -- defined in the compilation unit (not
+                              -- extern).
+                              -> ValueRef
+                              -- ^ Indicates which base type contains
+                              -- the vtable pointer for the derived
+                              -- class (from LLVM debug info
+                              -- documentation).
+                              -> n2
+                              -- ^ Flags for the declaration.
+                              -> Bool
+                              -- ^ Whether or not this function is optimized.
+                              -> ValueRef
+                              -- ^ A reference to the actual function itself.
+                              -> ValueRef
+                              -- ^ A metadata containing the list of
+                              -- template parameters.
+                              -> ValueRef
+                              -- ^ A metadata describing the function
+                              -- declaration.
+                              -> ValueRef
+                              -- ^ A metadata containing the list of variables
+                              -- declared in the function.
+                              -> n3
+                              -- ^ The beginning line number.
+                              -> m ValueRef
+                              -- ^ The LLVM metadata for this function.
+
+  -- | Generate an LLVM metadata node containing debug information for a
+  -- basic block.
+  blockMetadataInContext :: (Integral n1, Integral n2, Integral n3)
+                         => ValueRef
+                         -- ^ The metadata for the subprogram containing
+                         -- this block.
+                         -> n1
+                         -- ^ The line number.
+                         -> n2
+                         -- ^ The column number.
+                         -> ValueRef
+                         -- ^ The metadata for the file.
+                         -> n3
+                         -- ^ A unique identifier (for template instantiations).
+                         -> m ValueRef
+                         -- ^ The metadata describing the block.
+
+  -- | Generate an llvm metadata node containing debug information for a
+  -- basic type.
+  basicTypeMetadataInContext :: (Integral n1, Integral n2, Integral n3,
+                                 Integral n4, Integral n5, Integral n6)
+                             => ValueRef
+                             -- ^ The metadata for the compilation
+                             -- unit declaring this type.
+                             -> String
+                             -- ^ The type's name.
+                             -> ValueRef
+                             -- ^ The metadata for the file.
+                             -> n1
+                             -- ^ The line number.
+                             -> n2
+                             -- ^ The size in bits.
+                             -> n3
+                             -- ^ The alignment in bits.
+                             -> n4
+                             -- ^ The offset in bits.
+                             -> n5
+                             -- ^ The flags.
+                             -> n6
+                             -- ^ The DWARF type encoding.
+                             -> m ValueRef
+                             -- ^ The LLVM metadata for this type.
+
+  -- | Generate an LLVM metadata node containing debug information for a
+  -- composite type.
+  derivedTypeMetadataInContext :: (Integral n1, Integral n2, Integral n3,
+                                   Integral n4, Integral n5, Integral n6)
+                               => n1
+                               -- ^ The tag.
+                               -> ValueRef
+                               -- ^ The metadata for the compilation
+                               -- unit declaring this type.
+                               -> String
+                               -- ^ The type's name.
+                               -> ValueRef
+                               -- ^ The metadata for the file.
+                               -> n2
+                               -- ^ The line number.
+                               -> n3
+                               -- ^ The size in bits.
+                               -> n4
+                               -- ^ The alignment in bits.
+                               -> n5
+                               -- ^ The offset in bits.
+                               -> n6
+                               -- ^ The flags.
+                               -> ValueRef
+                               -- ^ The metadata for the type from
+                               -- which this is derived
+                               -> m ValueRef
+                               -- ^ The metadata for this type.
+
+  -- | Generate an LLVM metadata node containing debug information for a
+  -- composite type.
+  compositeTypeMetadataInContext :: (Integral n1, Integral n2, Integral n3,
+                                     Integral n4, Integral n5, Integral n6)
+                                 => n1
+                                 -- ^ The tag
+                                 -> ValueRef
+                                 -- ^ The metadata for the compilation
+                                 -- unit declaring this type.
+                                 -> String
+                                 -- ^ The type's name.
+                                 -> ValueRef
+                                 -- ^ The metadata for the file.
+                                 -> n2
+                                 -- ^ The line number.
+                                 -> n3
+                                 -- ^ The size in bits.
+                                 -> n4
+                                 -- ^ The alignment in bits.
+                                 -> n5
+                                 -- ^ The offset in bits.
+                                 -> n6
+                                 -- ^ The flags.
+                                 -> ValueRef
+                                 -- ^ The metadata for the type from
+                                 -- which this is derived
+                                 -> ValueRef
+                                 -- ^ Metadata array containing member types
+                                 -> m ValueRef
+                                 -- ^ The metadata for this type.
+
+  -- | Generate an LLVM metadata node containing debug information for
+  -- an enum value
+  enumMetadataInContext :: Integral n => String
+                        -- ^ The name.
+                        -> n
+                        -- ^ The enum value
+                        -> m ValueRef
+                        -- ^ The metadata for this enum.
+
+  -- | Generate an LLVM metadata node containing debug information for a
+  -- local variable.
+  localVarMetadataInContext :: (Integral n1, Integral n2) => ValueRef
+                            -- ^ The metadata for the lexical block
+                            -- declaring this variable.
+                            -> String
+                            -- ^ The variable's name.
+                            -> ValueRef
+                            -- ^ The metadata for the file declaring
+                            -- this variable.
+                            -> n1
+                            -- ^ Line number where defined.
+                            -> ValueRef
+                            -- ^ The metadata for the type of this variable.
+                            -> n2
+                            -- ^ The flags.
+                            -> m ValueRef
+                            -- ^ The LLVM metadata for this variable.
+
+  -- | Generate an LLVM metadata node containing debug information for
+  -- an argument
+  argMetadataInContext :: (Integral n1, Integral n2, Integral n3) => ValueRef
+                       -- ^ The block metadata for the declarer of this variable
+                       -> String
+                       -- ^ The argument's name
+                       -> ValueRef
+                       -- ^ The metadata for the file declaring this variable
+                       -> n1
+                       -- ^ Line number where defined
+                       -> n2
+                       -- ^ Argument index
+                       -> ValueRef
+                       -- ^ The metadata for the type of this variable
+                       -> n3
+                       -- ^ The flags
+                       -> m ValueRef
+                       -- ^ The LLVM metadata for this variable
+
+  -- | Generate an LLVM metadata node giving a location.
+  locationMetadataInContext :: (Integral n1, Integral n2) => n1
+                            -- ^ The line number.
+                            -> n2
+                            -- ^ The column number.
+                            -> ValueRef
+                            -- ^ The metadata node for the lexical block
+                            -- containing this.
+                            -> m ValueRef
