@@ -53,8 +53,7 @@ action = FFI.fromVerifierFailureAction FFI.ReturnStatus
 
 -- | Verifies that a module is valid, taking the specified action if
 -- not.  Optionally returns a human-readable description of any
--- invalid constructs.  Message must be disposed with
--- @disposeMessage@.
+-- invalid constructs.
 verifyModule :: ModuleRef -> IO (Bool, String)
 verifyModule mod =
   let
