@@ -1,5 +1,5 @@
 name:			llvm-bindings
-version:		3.2.1.2
+version:		3.2.1.3
 license:		BSD3
 synopsis:		LLVM Bindings for Haskell
 description:
