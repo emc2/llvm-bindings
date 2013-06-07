@@ -1,4 +1,4 @@
-AC_INIT([Haskell LLVM Bindings], [3.2.1.0], [emc2@metricspace.net], [llvm-bindings])
+AC_INIT([Haskell LLVM Bindings], [3.2.1.3], [emc2@metricspace.net], [llvm-bindings])
 
 AC_CONFIG_FILES([llvm-bindings.buildinfo])
 
