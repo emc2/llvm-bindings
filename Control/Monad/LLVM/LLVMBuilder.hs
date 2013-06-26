@@ -901,6 +901,7 @@ instance MonadLLVMContext m => MonadLLVMContext (LLVMBuilderT m) where
   getBitcodeModuleInContext = lift . getBitcodeModuleInContext
   tbaaRootMetadataInContext = lift . tbaaRootMetadataInContext
   tbaaMetadataInContext name parent = lift . tbaaMetadataInContext name parent
+  rangeMetadataInContext bits = lift . rangeMetadataInContext bits
   fpMathMetadataInContext = lift . fpMathMetadataInContext
   loopMetadataInContext = lift loopMetadataInContext
   compileUnitMetadataInContext lang file producer dir main opt flags

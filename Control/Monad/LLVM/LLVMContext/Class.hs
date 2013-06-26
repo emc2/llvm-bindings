@@ -166,6 +166,29 @@ class MonadIO m => MonadLLVMContext m where
                         -> m ValueRef
                         -- ^ The TBAA metadata node.
 
+  -- | Create an LLVM range metadata value in a given context for an
+  -- integer type with a given width from a list of intervals.
+  -- 
+  -- Intervals are represented as a list of (a, b) pairs, where a
+  -- represents the inclusive lower bound and b represents the exclusive
+  -- upper bound.  That is, (a, b) represents the mathematical interval
+  -- [a, b).  It must always be the case that a < b.
+  -- 
+  -- The intervals in a list may be overlapping, unsorted, and may
+  -- contain values anywhere in the range -2^w to 2^w, where w is the
+  -- width of the integer type.  The list will be automatically
+  -- converted to the format expected by LLVM.
+  rangeMetadataInContext :: (Integral n1, Integral n2, Ord n2)
+                         => n1
+                         -- ^ The width of the integer type in bits.
+                         -> [(n2, n2)]
+                         -- ^ The intervals (unsorted, possibly
+                         -- overlapping, not wrapped)
+                         -> m (Maybe ValueRef)
+                         -- ^ A metadata value, on Nothing if the range covers
+                         -- the entire space of values.
+
+
   -- | Create metadata for FP math accuracy in a given context.
   fpMathMetadataInContext :: Real n => n
                           -- ^ The required accuracy.

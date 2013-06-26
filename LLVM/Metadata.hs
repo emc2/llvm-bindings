@@ -41,8 +41,8 @@ module LLVM.Metadata(
        fpMathMetadataInContext,
 
        -- * Range Metadata
---       rangeMetadata,
---       rangeMetadataInContext,
+       rangeMetadata,
+       rangeMetadataInContext,
 
        -- * Loop Metadata
        loopMetadata,
@@ -76,9 +76,10 @@ module LLVM.Metadata(
        locationMetadataInContext,
        ) where
 
-import Data.Dwarf
-import Data.Word
 import Data.Bits
+import Data.Dwarf
+import Data.List
+import Data.Word
 import LLVM.Core
 
 -- | Create metadata for a TBAA root node.
@@ -161,6 +162,121 @@ fpMathMetadataInContext ctx accuracy =
   do
     ty <- doubleTypeInContext ctx
     mdNode [constReal ty accuracy]
+
+-- Turn an unsorted list of possibly overlapping intervals into the
+-- kind of list LLVM metadata wants to see.
+rangeNormalize :: (Integral m, Num n, Ord n) => m -> [(n, n)] -> Maybe [(n, n)]
+rangeNormalize bits ranges =
+  let
+    unsignedMax = 2 ^ bits
+    unsignedMin = -(2 ^ bits)
+    signedMax = (2 ^ (bits - 1)) - 1
+    signedMin = -(2 ^ (bits - 1))
+
+    -- Merge overlapping ranges in a sorted list
+    rangeCollapse ((first @ (lo, hi)) : (rest @ ((lo', hi') : rest')))
+      | hi < lo' = first : rangeCollapse rest
+      | otherwise = rangeCollapse ((lo, hi') : rest')
+    rangeCollapse list = list
+
+    -- Split a wrapped range in two
+    splitRange (a, b) =
+      if a >= b
+      then [(signedMin, b), (a, signedMax + 1)]
+      else [(a, b)]
+
+    -- Convert an unsigned number into its signed equivalent
+    signedConvert (a, b) =
+      let
+        signedConvertOne num
+          | unsignedMax < num || unsignedMin > num =
+            -- This is where exceptions in the main language would be
+            -- really nice.
+            error ("Number is outside possible values for given width")
+          | signedMax < num = signedMin + (num - signedMax)
+          | signedMin > num = signedMax + (num - signedMin)
+          | otherwise = num
+      in
+        (signedConvertOne a, signedConvertOne b)
+
+    normalized =
+      rangeCollapse (sort (concat (map splitRange (map signedConvert ranges))))
+  in case normalized of
+    [(low, high)] ->
+      if low == -(2 ^ (bits - 1)) && high == 2 ^ (bits - 1)
+      then Nothing
+      else Just normalized
+    _ -> Just normalized
+
+-- | Create an LLVM range metadata value for an integer type with a
+-- given width from a list of intervals.
+-- 
+-- Intervals are represented as a list of (a, b) pairs, where a
+-- represents the inclusive lower bound and b represents the exclusive
+-- upper bound.  That is, (a, b) represents the mathematical interval
+-- [a, b).  It must always be the case that a < b.
+-- 
+-- The intervals in a list may be overlapping, unsorted, and may
+-- contain values anywhere in the range -2^w to 2^w, where w is the
+-- width of the integer type.  The list will be automatically
+-- converted to the format expected by LLVM.
+rangeMetadata :: (Integral m, Integral n, Ord n)
+              => m
+              -- ^ The width of the integer type in bits.
+              -> [(n, n)]
+              -- ^ The intervals (unsorted, possibly overlapping, not wrapped)
+              -> IO (Maybe ValueRef)
+              -- ^ A metadata value, on Nothing if the range covers
+              -- the entire space of values.
+rangeMetadata bits intervals =
+  let
+    ty = intType bits
+    buildRange (low, high) =
+      mdNode [ constInt ty low True, constInt ty high True ]
+  in case rangeNormalize bits intervals of
+    Nothing -> return Nothing
+    Just intervals' ->
+      do
+        mdintervals <- mapM buildRange intervals'
+        out <- mdNode mdintervals
+        return (Just out)
+
+-- | Create an LLVM range metadata value in a given context for an
+-- integer type with a given width from a list of intervals.
+-- 
+-- Intervals are represented as a list of (a, b) pairs, where a
+-- represents the inclusive lower bound and b represents the exclusive
+-- upper bound.  That is, (a, b) represents the mathematical interval
+-- [a, b).  It must always be the case that a < b.
+-- 
+-- The intervals in a list may be overlapping, unsorted, and may
+-- contain values anywhere in the range -2^w to 2^w, where w is the
+-- width of the integer type.  The list will be automatically
+-- converted to the format expected by LLVM.
+rangeMetadataInContext :: (Integral m, Integral n, Ord n)
+                       => ContextRef
+                       -- ^ The LLVM Context
+                       -> m
+                       -- ^ The width of the integer type in bits.
+                       -> [(n, n)]
+                       -- ^ The intervals (unsorted, possibly
+                       -- overlapping, not wrapped)
+                       -> IO (Maybe ValueRef)
+                       -- ^ A metadata value, on Nothing if the range covers
+                       -- the entire space of values.
+rangeMetadataInContext ctx bits intervals =
+  let
+    buildRange ty (low, high) =
+      mdNodeInContext ctx [ constInt ty low True, constInt ty high True ]
+  in do
+    ty <- intTypeInContext ctx bits
+    case rangeNormalize bits intervals of
+      Nothing -> return Nothing
+      Just intervals' ->
+        do
+          mdintervals <- mapM (buildRange ty) intervals'
+          out <- mdNodeInContext ctx mdintervals
+          return (Just out)
 
 -- | Create a loop identifier metadata node.
 loopMetadata :: IO ValueRef

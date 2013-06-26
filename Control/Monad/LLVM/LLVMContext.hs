@@ -226,6 +226,14 @@ tbaaMetadataInContext' name parent constant =
     ctx <- ask
     liftIO (Metadata.tbaaMetadataInContext ctx name parent constant)
 
+rangeMetadataInContext' :: (MonadIO m, Integral n1, Integral n2, Ord n2) =>
+                          n1 -> [(n2, n2)] ->
+                          (ReaderT LLVM.ContextRef m) (Maybe LLVM.ValueRef)
+rangeMetadataInContext' bits ranges =
+  do
+    ctx <- ask
+    liftIO (Metadata.rangeMetadataInContext ctx bits ranges)
+
 fpMathMetadataInContext' :: (MonadIO m, Real n) => n ->
                             (ReaderT LLVM.ContextRef m) LLVM.ValueRef
 fpMathMetadataInContext' accuracy =
@@ -409,6 +417,7 @@ instance MonadIO m => MonadLLVMContext (LLVMContextT m) where
   tbaaRootMetadataInContext = LLVMContextT . tbaaRootMetadataInContext'
   tbaaMetadataInContext name parent =
     LLVMContextT . tbaaMetadataInContext' name parent
+  rangeMetadataInContext bits = LLVMContextT . rangeMetadataInContext' bits
   fpMathMetadataInContext = LLVMContextT . fpMathMetadataInContext'
   loopMetadataInContext = LLVMContextT loopMetadataInContext'
   compileUnitMetadataInContext lang file producer dir main opt flags
